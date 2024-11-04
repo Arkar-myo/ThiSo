@@ -1,0 +1,33 @@
+{
+  "title": "Privacy Policy",
+  "sections": [
+    {
+      "title": "1. Information We Collect",
+      "content": "We collect information you provide directly to us, such as when you create an account, submit content, or contact us for support."
+    },
+    {
+      "title": "2. How We Use Your Information",
+      "content": "We use the information we collect to provide, maintain, and improve our services, to communicate with you, and to comply with legal obligations."
+    },
+    {
+      "title": "3. Information Sharing and Disclosure",
+      "content": "We do not share your personal information with third parties except as described in this policy or with your consent."
+    },
+    {
+      "title": "4. Data Security",
+      "content": "We take reasonable measures to help protect your personal information from loss, theft, misuse, unauthorized access, disclosure, alteration, and destruction."
+    },
+    {
+      "title": "5. Your Rights and Choices",
+      "content": "You may update, correct, or delete your account information at any time by logging into your account or contacting us."
+    },
+    {
+      "title": "6. Changes to This Policy",
+      "content": "We may update this privacy policy from time to time. We will notify you of any changes by posting the new privacy policy on this page."
+    },
+    {
+      "title": "7. Contact Us",
+      "content": "If you have any questions about this privacy policy, please contact us at [Your Contact Information]."
+    }
+  ]
+}

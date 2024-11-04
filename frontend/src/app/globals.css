@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Add these styles to customize the slider */
+.swiper-button-next,
+.swiper-button-prev {
+  color: theme('colors.primary.DEFAULT') !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: theme('colors.primary.DEFAULT') !important;
+}
+
+/* Custom Swiper Styles */
+.song-swiper {
+  position: relative !important;
+  padding-bottom: 3rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+.swiper-button-next-custom,
+.swiper-button-prev-custom {
+  @apply p-2 rounded-full transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800;
+}
+
+.swiper-button-next-custom:disabled,
+.swiper-button-prev-custom:disabled {
+  @apply opacity-30 cursor-not-allowed;
+}
+
+.swiper-pagination-custom {
+  @apply flex justify-center gap-2 mt-6;
+}
+
+.swiper-pagination-bullet-custom {
+  @apply w-2 h-2 rounded-full bg-gray-300 dark:bg-gray-700 transition-all duration-200 cursor-pointer inline-block mx-1;
+}
+
+.swiper-pagination-bullet-active-custom {
+  @apply w-6 bg-primary;
+}
+
+/* Optional: Add smooth shadow to cards */
+.swiper-slide {
+  @apply transition-all duration-300;
+  width: auto !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.swiper-slide:hover {
+  @apply shadow-lg;
+}
+
+/* Ensure the container doesn't overflow */
+section {
+  overflow: hidden !important;
+  padding: 0 1rem;
+}
+
+/* If needed, also add this to ensure the entire page doesn't scroll horizontally */
+body {
+  overflow-x: hidden;
+}
+
+.swiper-slide-active {
+  @apply scale-100;
+}
+
+/* Pagination container */
+.swiper-pagination-popular,
+.swiper-pagination-viewed,
+.swiper-pagination-liked,
+.swiper-pagination-artists {
+  position: relative !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-top: 1.5rem !important;
+}
+
+/* Pagination bullets */
+.swiper-pagination-bullet-custom {
+  width: 8px !important;
+  height: 8px !important;
+  display: inline-block !important;
+  margin: 0 4px !important;
+  background-color: #d1d5db !important;
+  border-radius: 9999px !important;
+  opacity: 0.5 !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Active bullet */
+.swiper-pagination-bullet-active-custom {
+  @apply w-6 bg-primary;
+}
+
+/* Navigation buttons */
+.swiper-button-next-popular,
+.swiper-button-prev-popular,
+.swiper-button-next-liked,
+.swiper-button-prev-liked,
+.swiper-button-next-viewed,
+.swiper-button-prev-viewed,
+.swiper-button-next-artists,
+.swiper-button-prev-artists {
+  @apply p-2 rounded-full transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800;
+}
+
+/* Disabled state for all buttons */
+.swiper-button-next-popular:disabled,
+.swiper-button-prev-popular:disabled,
+.swiper-button-next-liked:disabled,
+.swiper-button-prev-liked:disabled,
+.swiper-button-next-viewed:disabled,
+.swiper-button-prev-viewed:disabled,
+.swiper-button-next-artists:disabled,
+.swiper-button-prev-artists:disabled {
+  @apply opacity-30 cursor-not-allowed;
+}

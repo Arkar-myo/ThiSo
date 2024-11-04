@@ -1,0 +1,493 @@
+openapi: 3.0.0
+info:
+  title: ThiSo API
+  version: 1.0.0
+  description: API documentation for ThiSo
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        created:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        userType:
+          type: string
+          
+    UserInput:
+      type: object
+      required:
+        - username
+        - email
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        
+    Song:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        artist:
+          type: string
+        chordPro:
+          type: string
+
+    SongInput:
+      type: object
+      required:
+        - title
+        - artist
+        - chordPro
+      properties:
+        title:
+          type: string
+        artist:
+          type: string
+        chordPro:
+          type: string
+
+    SavedSong:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        songId:
+          type: string
+
+    SavedSongInput:
+      type: object
+      required:
+        - userId
+        - songId
+      properties:
+        userId:
+          type: string
+        songId:
+          type: string
+
+paths:
+  /login:
+    post:
+      tags: [Authentication]
+      summary: User login
+      description: Authenticate a user and return a JWT token if credentials are correct.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                password:
+                  type: string
+                  example: pass1234
+      responses:
+        200:
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        400:
+          description: Missing credentials
+        401:
+          description: Invalid credentials
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Get all users
+      description: Retrieve a list of all users.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: List of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        500:
+          description: Internal server error
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Get user by ID
+      description: Retrieve a specific user and their associated data.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The user ID
+      responses:
+        200:
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: User not found
+        500:
+          description: Internal server error
+
+  /users:
+    post:
+      tags: [Users]
+      summary: Register a new user
+      description: Register a new user and send a verification email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                username:
+                  type: string
+                  example: johndoe
+                password:
+                  type: string
+                  example: pass1234
+                userType:
+                  type: string
+                  example: user
+      responses:
+        200:
+          description: User created and verification email sent
+        400:
+          description: Missing required fields or username already exists
+        500:
+          description: Internal server error
+
+  /verify:
+    get:
+      tags: [Authentication]
+      summary: Verify user
+      description: Check if the user's email has been verified.
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: User verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Authentication required
+        500:
+          description: Internal server error
+
+  /follow/{id}:
+    post:
+      tags: [Users]
+      summary: Follow a user
+      description: Follow another user by their ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the user to follow
+      responses:
+        200:
+          description: Followed user successfully
+        404:
+          description: User to follow not found
+        400:
+          description: Already following this user
+        500:
+          description: Internal server error
+
+  /unfollow/{id}:
+    delete:
+      tags: [Users]
+      summary: Unfollow a user
+      description: Unfollow a user by their ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the user to unfollow
+      responses:
+        200:
+          description: Unfollowed user successfully
+        404:
+          description: User to unfollow not found
+        400:
+          description: Not following this user
+        500:
+          description: Internal server error
+
+  /users/search:
+    get:
+      tags: [Users]
+      summary: Search for users
+      description: Search for users by username or email.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+          description: The search query
+      responses:
+        200:
+          description: List of matching users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        400:
+          description: Missing search query
+        500:
+          description: Internal server error
+
+  /verify-email:
+    post:
+      tags: [Authentication]
+      summary: Verify user email
+      description: Verify a user's email address using a verification code.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                code:
+                  type: string
+                  example: 123456
+      responses:
+        200:
+          description: Email verified successfully
+        404:
+          description: User not found
+        400:
+          description: Invalid verification code or code expired
+        500:
+          description: Internal server error
+
+  /forgot-password:
+    post:
+      tags: [Authentication]
+      summary: Request password reset
+      description: Request a password reset by email.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: user@example.com
+                frontendBaseUri:
+                  type: string
+                  example: "https://frontend.com/reset-password"
+      responses:
+        200:
+          description: Password reset email sent
+        400:
+          description: Email is required
+        500:
+          description: Internal server error
+
+  /songs:
+    get:
+      tags: [Songs]
+      summary: Get all songs
+      responses:
+        '200':
+          description: A list of songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Song'
+    post:
+      tags: [Songs]
+      summary: Create a new song
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongInput'
+      responses:
+        '201':
+          description: Song created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+
+  /songs/{id}:
+    get:
+      tags: [Songs]
+      summary: Get a song by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single song
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+    put:
+      tags: [Songs]
+      summary: Update a song by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SongInput'
+      responses:
+        '200':
+          description: Song updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Song'
+    delete:
+      tags: [Songs]
+      summary: Delete a song by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Song deleted
+
+  /savedSongs:
+    get:
+      tags: [Songs]
+      summary: Get all saved songs
+      responses:
+        '200':
+          description: A list of saved songs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SavedSong'
+    post:
+      tags: [Songs]
+      summary: Create a saved song
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavedSongInput'
+      responses:
+        '201':
+          description: Saved song created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSong'
+
+  /savedSongs/{id}:
+    get:
+      tags: [Songs]
+      summary: Get a saved song by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A single saved song
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSong'
+    delete:
+      tags: [Songs]
+      summary: Delete a saved song by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Saved song deleted
