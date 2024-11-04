@@ -26,6 +26,7 @@ export default function ChordProEditorPage() {
           setInitialSongData(song)
         } catch (error) {
           console.error('Error fetching song:', error)
+          setInitialSongData(null);
           // You might want to show an error message here
         }
       }
