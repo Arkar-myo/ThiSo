@@ -33,8 +33,8 @@ export default function ChordProEditorPage() {
   }, [searchParams, user])
 
   return (
-    <ProtectedRoute>
-      <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProtectedRoute>
         <div className="container mx-auto px-4 pt-20 pb-12">
           <div className="flex flex-col items-center text-center mb-0">
             <div className="inline-flex items-center justify-center p-2 rounded-full bg-primary/10 mb-4">
@@ -49,7 +49,7 @@ export default function ChordProEditorPage() {
           </div>
           <ChordProEditor initialData={initialSongData} />
         </div>
-      </Suspense>
-    </ProtectedRoute>
+      </ProtectedRoute>
+    </Suspense>
   )
 }
