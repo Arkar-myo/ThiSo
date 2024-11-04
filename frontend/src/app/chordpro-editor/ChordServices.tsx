@@ -2,7 +2,7 @@ import React from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { GState } from 'jspdf'
-import { ThiSoProps, postSong, updateSong } from './songService'
+import { ThiSoProps, postSong, updateSong } from '../../services/songService'
 import { Song, Line, ChordProParser } from 'chordsheetjs';
 import ChordSheetJS from "chordsheetjs"
 import { Chord } from 'chordsheetjs';

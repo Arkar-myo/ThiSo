@@ -4,7 +4,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { useLanguage } from '@/contexts/LanguageContext'
 import { translations } from '@/utils/translations'
 import { Eye, Download, Upload } from 'lucide-react'
-import { renderThiSo, handleDownload, handleSave } from '@/services/chordServices'
+// import { renderThiSo, handleDownload, handleSave } from '@/app/chordpro-editor/chordServices'
+import { renderThiSo, handleDownload, handleSave } from './ChordServices'
 import { Song } from '@/services/songService'
 import { useAuth } from '@/contexts/AuthContext'
 

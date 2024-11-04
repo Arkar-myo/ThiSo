@@ -1,11 +1,11 @@
 'use client';
 
 import React from 'react';
-import SearchResults from '@/components/sections/SearchResults';
-import PopularSongs from '@/components/sections/PopularSongs';
-import MostViewedSongs from '@/components/sections/MostViewedSongs';
-import MostLikedSongs from '@/components/sections/MostLikedSongs';
-import FeaturedArtists from '@/components/sections/FeaturedArtists';
+import SearchResults from './SearchResults';
+import PopularSongs from './PopularSongs';
+import MostLikedSongs from './MostLikedSongs';
+import MostViewedSongs from './MostViewedSongs';
+import FeaturedArtists from './FeaturedArtists';
 import SearchBar from '@/components/SearchBar';
 import { useRouter, useSearchParams } from 'next/navigation';
 

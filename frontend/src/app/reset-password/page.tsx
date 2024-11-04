@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
-import ResetPasswordDialog from '@/components/ResetPasswordDialog'
+import ResetPasswordDialog from '@/app/reset-password/ResetPasswordDialog'
 import { useRouter } from 'next/navigation'
 
 export default function ResetPasswordPage() {

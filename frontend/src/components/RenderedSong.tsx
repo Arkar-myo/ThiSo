@@ -1,4 +1,4 @@
-import { renderThiSo } from '@/services/chordServices';
+import { renderThiSo } from '@/app/chordpro-editor/ChordServices';
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import ControlBar from './ControlBar';
 import type { Song } from '@/services/songService';

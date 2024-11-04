@@ -3,7 +3,7 @@
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
-import LoginSignupDialog from '@/components/LoginSignupDialog'
+import LoginSignupDialog from '@/app/login/LoginSignupDialog'
 
 export default function LoginPage() {
   const { user } = useAuth()

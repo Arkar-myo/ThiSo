@@ -14,8 +14,8 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from '@/contexts/AuthContext'
 import { login, register } from '@/services/userService'
 import { useRouter } from 'next/navigation'
-import EmailVerificationDialog from './EmailVerificationDialog'
-import ForgotPasswordDialog from './ForgotPasswordDialog'
+import EmailVerificationDialog from '../../components/EmailVerificationDialog'
+import ForgotPasswordDialog from '../../components/ForgotPasswordDialog'
 
 interface LoginSignupDialogProps {
   className?: string;

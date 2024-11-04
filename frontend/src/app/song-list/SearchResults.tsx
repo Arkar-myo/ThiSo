@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { searchSongs } from '@/services/songService';
-import SongCard from '../SongCard';
-import { Button } from '../ui/button';
+import SongCard from '@/components/SongCard';
+import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { ChevronDown } from 'lucide-react';

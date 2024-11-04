@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { getMostViewedSongs } from '@/services/songService';
-import SongCard from '../SongCard';
-import { Skeleton } from '../ui/skeleton';
+import { getMostLikedSongs, saveSong } from '@/services/songService';
+import SongCard from '@/components/SongCard';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -14,12 +14,12 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { useSongActions } from '@/hooks/useSongActions';
 
-export default function MostViewedSongs() {
-    const {
-        handleOptimisticLike,
-        handleDelete,
-        handleEdit,
-        handleSaveToggle,
+export default function MostLikedSongs() {
+    const { 
+        handleOptimisticLike, 
+        handleDelete, 
+        handleEdit, 
+        handleSaveToggle, 
         checkIsLiked,
         checkIsSaved,
         user } = useSongActions();
@@ -27,8 +27,8 @@ export default function MostViewedSongs() {
     const t = translations[language];
 
     const { data: songs, isLoading, error } = useQuery({
-        queryKey: ['most-viewed-songs'],
-        queryFn: getMostViewedSongs,
+        queryKey: ['most-liked-songs'],
+        queryFn: getMostLikedSongs,
     });
 
     if (isLoading) {
@@ -49,14 +49,14 @@ export default function MostViewedSongs() {
     return (
         <section className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold">{t.mostViewedSongs}</h2>
+                <h2 className="text-2xl font-bold">{t.mostLikedSongs}</h2>
                 <div className="flex gap-2">
-                    <button className="swiper-button-prev-viewed">
+                    <button className="swiper-button-prev-liked">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
                     </button>
-                    <button className="swiper-button-next-viewed">
+                    <button className="swiper-button-next-liked">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="m9 18 6-6-6-6" />
                         </svg>
@@ -67,17 +67,17 @@ export default function MostViewedSongs() {
             <Swiper
                 modules={[Navigation, Pagination, Autoplay]}
                 navigation={{
-                    nextEl: '.swiper-button-next-viewed',
-                    prevEl: '.swiper-button-prev-viewed',
+                    nextEl: '.swiper-button-next-liked',
+                    prevEl: '.swiper-button-prev-liked',
                 }}
                 pagination={{
                     clickable: true,
-                    el: '.swiper-pagination-viewed',
-                    bulletClass: 'swiper-pagination-bullet-viewed',
-                    bulletActiveClass: 'swiper-pagination-bullet-active-viewed',
+                    el: '.swiper-pagination-liked',
+                    bulletClass: 'swiper-pagination-bullet-liked',
+                    bulletActiveClass: 'swiper-pagination-bullet-active-liked',
                 }}
                 autoplay={{
-                    delay: 3000,
+                    delay: 4000,
                     disableOnInteraction: false,
                 }}
                 loop={true}
@@ -87,11 +87,11 @@ export default function MostViewedSongs() {
                     640: { slidesPerView: 4 },
                     768: { slidesPerView: 6 },
                     1024: { slidesPerView: 6 },
-                }}
+                  }}
                 className="song-swiper !overflow-visible"
             >
                 {songs?.map((song) => (
-                    <SwiperSlide key={song.id} className="transition-transform duration-300 hover:scale-[1.02]">
+                    <SwiperSlide key={song.id} className="transition-transform duration-300 hover:scale-[1.02] ">
                         <SongCard
                             song={song}
                             // stats={{
@@ -99,8 +99,8 @@ export default function MostViewedSongs() {
                             //     likeCount: song.songLikes?.length || 0,
                             //     commentCount: song.commentCount || 0
                             // }}
-                            onLike={() => handleOptimisticLike(song, 'most-viewed-songs')}
-                            onSave={() => handleSaveToggle(song, 'most-viewed-songs')}
+                            onLike={() => handleOptimisticLike(song, 'most-liked-songs')}
+                            onSave={() => handleSaveToggle(song, 'most-liked-songs')}
                             isLiked={checkIsLiked(song)}
                             isSaved={checkIsSaved(song)}
                             canManage={user?.id === song.userId || user?.userType === 'admin'}
@@ -111,7 +111,7 @@ export default function MostViewedSongs() {
                         />
                     </SwiperSlide>
                 ))}
-                <div className="swiper-pagination-viewed mt-4"></div>
+                <div className="swiper-pagination-liked mt-4"></div>
             </Swiper>
         </section>
     );

@@ -3,11 +3,11 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getFeaturedArtists } from '@/services/songService';
-import { Skeleton } from '../ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { useRouter } from 'next/navigation';
-import { Card } from '../ui/card';
+import { Card } from '@/components/ui/card';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';

@@ -3,8 +3,8 @@
 import React from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { getPopularSongs, toggleLikeSong, deleteSong, Song } from '@/services/songService';
-import SongCard from '../SongCard';
-import { Skeleton } from '../ui/skeleton';
+import SongCard from '@/components/SongCard';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { useRouter } from 'next/navigation';
