@@ -3,15 +3,14 @@
 import { UserCircle } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { translations } from '@/utils/translations'
-// import ProtectedRoute from '@/components/ProtectedRoute'
+import ProtectedRoute from '@/components/ProtectedRoute'
 
 export default function ProfilePage() {
   const { language } = useLanguage()
   const t = translations[language]
-  const baseUri = window.location.origin;
 
   return (
-    // <ProtectedRoute>
+    <ProtectedRoute>
       <div className="container mx-auto px-4 pt-24 pb-12">
         <div className="flex flex-col items-center text-center mb-8">
           <div className="inline-flex items-center justify-center p-2 rounded-full bg-primary/10 mb-4">
@@ -26,6 +25,6 @@ export default function ProfilePage() {
         </div>
         {/* Rest of the profile page content */}
       </div>
-    // </ProtectedRoute>
+    </ProtectedRoute>
   )
 }

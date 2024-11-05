@@ -7,6 +7,13 @@ import { getSongById } from '@/services/songService';
 import { notFound } from 'next/navigation';
 import RenderedSong from '@/components/RenderedSong';
 
+// Define a type that includes params as a Promise
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
 function SongContent({ id }: { id: string }) {
   const { data: song, isLoading, error } = useQuery({
     queryKey: ['song', id],
@@ -42,13 +49,16 @@ function SongContent({ id }: { id: string }) {
   );
 }
 
-export default function SongPage({ params }: { params: { id: string } }) {
+export default async function SongPage({ params }: PageProps) {
+  // Await the resolved params to ensure it is treated as non-Promise
+  const { id } = await params;
+
   const [queryClient] = React.useState(() => new QueryClient());
 
   return (
     <QueryClientProvider client={queryClient}>
       <Suspense fallback={<div>Loading...</div>}>
-        <SongContent id={params.id} />
+        <SongContent id={id} />
       </Suspense>
     </QueryClientProvider>
   );

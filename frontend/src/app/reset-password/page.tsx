@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import { useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
-import ResetPasswordDialog from '@/app/reset-password/ResetPasswordDialog'
-import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect } from 'react';
+import ResetPasswordDialog from '@/app/reset-password/ResetPasswordDialog';
+import { useRouter } from 'next/navigation';
 
-export default function ResetPasswordPage() {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const token = searchParams?.get('token')
+function ResetPasswordContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const token = searchParams?.get('token');
 
   useEffect(() => {
     if (!token) {
-      router.push('/login')
+      router.push('/login');
     }
-  }, [token, router])
+  }, [token, router]);
 
   if (!token) {
-    return null
+    return null;
   }
 
   return (
@@ -28,5 +28,13 @@ export default function ResetPasswordPage() {
         token={token}
       />
     </div>
-  )
-} 
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordContent />
+    </Suspense>
+  );
+}
