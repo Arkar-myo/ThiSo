@@ -266,7 +266,7 @@ export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
     if (!text || typeof text !== 'string') {
       return {
         renderedLines: [
-          <p key="error" className="text-red-500">Invalid chord sheet input</p>
+          <p key="error" className="text-red-500">Please type the songs. The rendered lyrics will be displayed here.</p>
         ], renderErrorFlg: true,
       };
     }
@@ -286,7 +286,7 @@ export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
           className={`relative ${line.type === 'chorus'
             ? 'bg-gray-100 dark:bg-gray-700 p-2 pb-0 pt-0'
             : 'p-2 pb-0 pt-0'} 
-            flex flex-wrap ${isCurrentLine ? 'bg-yellow-200' : ''}`}
+            flex flex-wrap`}
         >
           {line.items.map((item: any, index: any) => (
             <div key={index} className="relative flex flex-col items-center mr-1">
@@ -406,7 +406,7 @@ export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
       renderErrorFlg: false
     };
   } catch (error) {
-    console.error('Error parsing chord sheet:', error);
+    // console.error('Error parsing chord sheet:', error);
     return {
       renderedLines: [<p key="error" className="text-red-500">Error parsing chord sheet</p>],
       renderErrorFlg: true

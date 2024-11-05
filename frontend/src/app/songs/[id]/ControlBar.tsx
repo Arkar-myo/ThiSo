@@ -1,12 +1,12 @@
 import React from 'react';
-import { Button } from './ui/button';
+import { Button } from '@/components/ui/button';
 import { Minus, Plus, Play, MoreHorizontal } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 interface ControlBarProps {
   onFontDecrease: () => void;
@@ -82,7 +82,7 @@ const ControlBar: React.FC<ControlBarProps> = ({
 
           {/* Auto Scroll Controls - Always Visible */}
           <div className="flex items-center bg-gray-100/50 dark:bg-gray-800/50 rounded-xl px-2 py-1">
-            <Button 
+            <Button
               variant={isScrolling ? "default" : "ghost"}
               onClick={onAutoScroll}
               className={`h-8 px-3 rounded-lg flex items-center gap-2 transition-colors
@@ -115,13 +115,15 @@ const ControlBar: React.FC<ControlBarProps> = ({
 
           {/* More Options Dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button 
-                variant="ghost"
-                className="h-8 w-8 rounded-lg bg-gray-100/50 dark:bg-gray-800/50"
-              >
-                <MoreHorizontal className="h-3.5 w-3.5" />
-              </Button>
+            <DropdownMenuTrigger asChild>
+              <div>
+                <Button
+                  variant="ghost"
+                  className="h-8 w-8 rounded-lg bg-gray-100/50 dark:bg-gray-800/50"
+                >
+                  <MoreHorizontal className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-[200px] p-2">
               {/* Mobile Font Controls */}
@@ -137,17 +139,12 @@ const ControlBar: React.FC<ControlBarProps> = ({
                     <Minus className="h-3.5 w-3.5" />
                   </Button>
                   <span className="hidden sm:inline w-6 text-center text-sm">Aa</span>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={onFontIncrease}
-                    className="h-7 w-7 rounded-lg"
-                  >
+                  <Button variant="ghost" size="icon" onClick={onFontIncrease} className="h-7 w-7 rounded-lg">
                     <Plus className="h-3.5 w-3.5" />
                   </Button>
                 </div>
               </div>
-              
+
               {/* Mobile Key Controls */}
               <div className="sm:hidden flex items-center justify-between p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
                 <span className="text-sm font-medium">Key</span>
@@ -173,8 +170,6 @@ const ControlBar: React.FC<ControlBarProps> = ({
                   </Button>
                 </div>
               </div>
-
-              {/* <div className="h-px bg-gray-200 dark:bg-gray-800 my-2" /> */}
 
               <DropdownMenuItem>Print</DropdownMenuItem>
               <DropdownMenuItem>Share</DropdownMenuItem>

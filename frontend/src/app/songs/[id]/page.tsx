@@ -1,18 +1,21 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, use } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { getSongById } from '@/services/songService';
 import { notFound } from 'next/navigation';
-import RenderedSong from '@/components/RenderedSong';
+// import RenderedSong from '@/components/RenderedSong';
+import RenderedSong from './RenderedSong';
 
-// Define a type that includes params as a Promise
 interface PageProps {
   params: Promise<{
     id: string;
   }>;
 }
+
+// Create a QueryClient instance outside of the component to avoid recreating it on every render
+const queryClient = new QueryClient();
 
 function SongContent({ id }: { id: string }) {
   const { data: song, isLoading, error } = useQuery({
@@ -49,11 +52,9 @@ function SongContent({ id }: { id: string }) {
   );
 }
 
-export default async function SongPage({ params }: PageProps) {
-  // Await the resolved params to ensure it is treated as non-Promise
-  const { id } = await params;
-
-  const [queryClient] = React.useState(() => new QueryClient());
+export default function SongPage({ params }: PageProps) {
+  // Use `React.use()` to resolve the Promise for params
+  const { id } = use(params);
 
   return (
     <QueryClientProvider client={queryClient}>

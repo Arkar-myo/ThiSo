@@ -173,11 +173,11 @@ const Header: React.FC = () => {
                 </Link>
                 <nav className="hidden lg:flex items-center gap-4 sm:gap-6">
                     <NavItems />
-                    <LanguageToggle />
+                    {/* <LanguageToggle /> */}
                     {user ? <UserMenu /> : <LoginSignupDialog />}
                 </nav>
                 <div className="flex lg:hidden items-center gap-2">
-                    <LanguageToggle />
+                    {/* <LanguageToggle /> */}
                     {user ? (
                         <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                             <DropdownMenuTrigger asChild>

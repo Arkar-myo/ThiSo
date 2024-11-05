@@ -1,8 +1,8 @@
 import { renderThiSo } from '@/app/chordpro-editor/ChordServices';
 import React, { useRef, useState, useEffect, useMemo } from 'react';
-import ControlBar from './ControlBar';
+import ControlBar from '@/app/songs/[id]/ControlBar';
 import type { Song } from '@/services/songService';
-import SongActions from './SongActions';
+import SongActions from '@/components/SongActions';
 import { useQueryClient } from '@tanstack/react-query';
 import { saveSong, toggleLikeSong, unsaveSong } from '@/services/songService';
 import { toast } from 'sonner';
@@ -236,10 +236,6 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
                 </div>
 
                 <SongActions
-                  // songId={localSongData.id}
-                  // viewCount={localSongData.viewCount || 0}
-                  // likeCount={localSongData.songLikes?.length || 0}
-                  // commentCount={localSongData.commentCount || 0}
                   songData={localSongData}
                   onLike={handleSongLike}
                   onSave={() => handleSaveToggle()}

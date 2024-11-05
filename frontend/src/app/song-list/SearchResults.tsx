@@ -65,11 +65,6 @@ export default function SearchResults({ query, onClearSearch }: SearchResultsPro
               <SongCard
                 key={song.id}
                 song={song}
-                // stats={{
-                //   viewCount: song.viewCount || 0,
-                //   likeCount: song.songLikes?.length || 0,
-                //   commentCount: song.commentCount || 0
-                // }}
                 onLike={() => handleOptimisticLike(song, 'songs/search')}
                 onSave={() => handleSaveToggle(song, 'songs/search')}
                 isLiked={checkIsLiked(song)}

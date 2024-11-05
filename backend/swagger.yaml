@@ -87,6 +87,58 @@ components:
           type: string
         songId:
           type: string
+    SongLike:
+      type: object
+      properties:
+        id:
+          type: string
+        songId:
+          type: string
+        userId:
+          type: string
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            username:
+              type: string
+    SongCard:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        singer:
+          type: string
+        writer:
+          type: string
+        album:
+          type: string
+        key:
+          type: string
+        tempo:
+          type: integer
+        viewCount:
+          type: integer
+        created:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        userId:
+          type: string
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+            username:
+              type: string
+        likeCount:
+          type: integer
 
 paths:
   /login:
@@ -436,6 +488,8 @@ paths:
     get:
       tags: [Songs]
       summary: Get all saved songs
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: A list of saved songs
@@ -454,6 +508,8 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SavedSongInput'
+      security:
+        - bearerAuth: []
       responses:
         '201':
           description: Saved song created
@@ -472,6 +528,8 @@ paths:
           required: true
           schema:
             type: string
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: A single saved song
@@ -488,6 +546,219 @@ paths:
           required: true
           schema:
             type: string
+      security:
+        - bearerAuth: []
       responses:
         '204':
           description: Saved song deleted
+  paths:
+  /songs/search:
+    get:
+      tags: [Song list]
+      summary: Search Songs
+      description: Search songs by title, singer, writer, or album with pagination.
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Search query for song title, singer, writer, or album.
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Page number for pagination.
+      responses:
+        '200':
+          description: A list of matched songs with pagination data.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  songs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SongCard'
+                  pagination:
+                    type: object
+                    properties:
+                      currentPage:
+                        type: integer
+                      totalPages:
+                        type: integer
+                      totalSongs:
+                        type: integer
+                      hasMore:
+                        type: boolean
+
+  /songs/featured:
+    get:
+      tags: [Song list]
+      summary: Retrieve Featured Songs
+      description: Get a list of top featured songs based on the number of likes.
+      responses:
+        '200':
+          description: A list of featured songs.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SongCard'
+
+  /songs/popular:
+    get:
+      tags: [Song list]
+      summary: Retrieve Popular Songs
+      description: Get a list of popular songs based on engagement.
+      responses:
+        '200':
+          description: A list of popular songs.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SongCard'
+
+  /songs/most-viewed:
+    get:
+      tags: [Song list]
+      summary: Retrieve Most Viewed Songs
+      description: Get a list of songs sorted by the highest view count.
+      responses:
+        '200':
+          description: A list of most-viewed songs.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SongCard'
+
+  /songs/most-liked:
+    get:
+      tags: [Song list]
+      summary: Retrieve Most Liked Songs
+      description: Get a list of songs sorted by the highest like count.
+      responses:
+        '200':
+          description: A list of most-liked songs.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SongCard'
+
+  /songs/featured-artists:
+    get:
+      tags: [Song list]
+      summary: Retrieve Featured Artists
+      description: Get a list of featured artists along with their top songs and like counts.
+      responses:
+        '200':
+          description: A list of featured artists and their songs.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    songCount:
+                      type: integer
+                    likeCount:
+                      type: integer
+                    songs:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/SongCard'
+
+
+  /like/songs/{id}:
+    post:
+      tags: [Actions]
+      summary: Like a Song
+      description: Adds a like to a song by a specific user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the song to like.
+      responses:
+        '200':
+          description: The song was liked successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  like:
+                    $ref: '#/components/schemas/SongLike'
+        '500':
+          description: Server error when liking the song.
+      security:
+        - bearerAuth: []
+
+  /unlike/songs/{id}:
+    delete:
+      tags: [Actions]
+      summary: Unlike a Song
+      description: Removes a like from a song by a specific user.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the song to unlike.
+      responses:
+        '200':
+          description: The song was unliked successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+        '500':
+          description: Server error when unliking the song.
+      security:
+        - bearerAuth: []
+
+  /likes/songs/{id}:
+    get:
+      tags: [Actions]
+      summary: Get Likes for a Song
+      description: Retrieves all likes for a specific song.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the song to retrieve likes for.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: A list of users who liked the song.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SongLike'
+        '500':
+          description: Server error when retrieving likes for the song.

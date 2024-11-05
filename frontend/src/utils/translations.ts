@@ -15,7 +15,7 @@ export const translations = {
     searchPlaceholder: "Search for a song or artist",
     search: "Search",
     aboutThiSo: "About ThiSo",
-    aboutParagraph1: "ThiSo is a platform dedicated to helping musicians of all levels find and learn their favorite songs...",
+    aboutParagraph1: "ThiSo is a platform dedicated to helping musicians of all levels find and learn their favorite songs.",
     aboutParagraph2: "Our extensive database includes lyrics and chords for a wide variety of genres and artists, making it easy for you to find the perfect song for your next performance or practice session.",
     aboutParagraph3: "Whether you're a beginner just starting out or an experienced musician looking to expand your repertoire, ThiSo has something for everyone.",
     termsOfService: "Terms of Service",
@@ -87,6 +87,7 @@ export const translations = {
     ourMission: "Our Mission",
     missionStatement: "At ThiSo, we believe that music should be accessible to everyone.",
     missionPoints: [
+      "Music should be accessible to everyone.",
       "Provide accurate and easy-to-use musical resources",
       "Foster a supportive community of musicians",
       "Make learning and playing music more enjoyable",
