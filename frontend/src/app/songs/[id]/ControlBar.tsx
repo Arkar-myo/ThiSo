@@ -138,7 +138,7 @@ const ControlBar: React.FC<ControlBarProps> = ({
                   >
                     <Minus className="h-3.5 w-3.5" />
                   </Button>
-                  <span className="hidden sm:inline w-6 text-center text-sm">Aa</span>
+                  <span className="w-6 text-center text-sm">Aa</span>
                   <Button variant="ghost" size="icon" onClick={onFontIncrease} className="h-7 w-7 rounded-lg">
                     <Plus className="h-3.5 w-3.5" />
                   </Button>
@@ -171,8 +171,8 @@ const ControlBar: React.FC<ControlBarProps> = ({
                 </div>
               </div>
 
-              <DropdownMenuItem>Print</DropdownMenuItem>
-              <DropdownMenuItem>Share</DropdownMenuItem>
+              {/* <DropdownMenuItem>Print</DropdownMenuItem> */}
+              {/* <DropdownMenuItem>Share</DropdownMenuItem> */}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

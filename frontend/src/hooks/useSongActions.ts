@@ -81,6 +81,7 @@ export const useSongActions = () => {
             await deleteSong(songId);
             await queryClient.invalidateQueries({ queryKey: ['songs'] });
             toast.success('Song deleted successfully');
+            await router.refresh();
         } catch (error) {
             toast.error('Failed to delete song');
         }

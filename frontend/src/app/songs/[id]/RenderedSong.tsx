@@ -127,9 +127,10 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
 
   const getScrollAmount = () => {
     // Adjust base amount and add minimum scroll amount
-    const baseScrollAmount = 2; // Increased base amount
-    const minScrollAmount = 0.5; // Minimum scroll amount
-    return Math.max(baseScrollAmount * scrollSpeed, minScrollAmount);
+    const baseScrollAmount = 0.5; // Increased base amount
+    const minScrollAmount = 0.01; // Decreased minimum scroll amount
+    const scrollAmountMultiplier = 5; // Increased multiplier
+    return Math.max(baseScrollAmount * scrollSpeed * scrollAmountMultiplier, minScrollAmount);
   };
 
   const handleAutoScroll = () => {
@@ -145,8 +146,9 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
       scrollIntervalRef.current = setInterval(() => {
         if (previewRef.current) {
           const { scrollTop, scrollHeight, clientHeight } = previewRef.current;
+          const isAtBottom = scrollTop + clientHeight >= scrollHeight;
 
-          if (scrollTop + clientHeight < scrollHeight) {
+          if (!isAtBottom) {
             const scrollAmount = getScrollAmount();
             previewRef.current.scrollTop += scrollAmount;
           } else {
@@ -155,21 +157,21 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
             setIsScrolling(false);
           }
         }
-      }, 50);
+      }, 16);
     }
   };
 
   const handleSpeedIncrease = () => {
     setScrollSpeed(prev => {
-      const newSpeed = Math.round((prev + 0.1) * 10) / 10;
-      return Math.min(newSpeed, 1.5);
+      const newSpeed = Math.min(Math.round((prev + 0.1) * 10) / 10, 1.5);
+      return newSpeed;
     });
   };
 
   const handleSpeedDecrease = () => {
     setScrollSpeed(prev => {
-      const newSpeed = Math.round((prev - 0.1) * 10) / 10;
-      return Math.max(newSpeed, 0.1);
+      const newSpeed = Math.max(Math.round((prev - 0.1) * 10) / 10, 0.1);
+      return newSpeed;
     });
   };
 
@@ -201,7 +203,7 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
               setIsScrolling(false);
             }
           }
-        }, 100);
+        }, 50);
       }
     }
   }, [scrollSpeed, isScrolling]);
@@ -256,12 +258,10 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
             <div className="p-4 sm:p-6">
               {useMemo(() => {
                 const { renderedLines } = renderThiSo({
-                  text: songData.body,  // Your chord sheet text
+                  text: songData.body,
                   transpose: transpose,
-                  // format: 'text' // Your transpose value (optional, defaults to 0)
 
                 });
-                // const { renderedLines } = renderChordPro(songData.body, transpose);
                 return (
                   <div
                     className="font-mono whitespace-pre-wrap"

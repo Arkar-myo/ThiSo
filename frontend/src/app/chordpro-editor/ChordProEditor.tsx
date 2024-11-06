@@ -152,7 +152,7 @@ const ChordProEditor: React.FC<{ initialData: Song | null }> = ({ initialData })
               value={chordProInput}
               onChange={handleInputChange}
               placeholder="Enter your ChordPro formatted text here..."
-              className="w-full h-[400px] font-mono"
+              className={`w-full h-[400px] font-mono ${isRenderError ? 'border-red-500' : 'border-gray-300'}`}
             />
           </div>
           <div
@@ -165,25 +165,42 @@ const ChordProEditor: React.FC<{ initialData: Song | null }> = ({ initialData })
           </div>
         </div>
         <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-4 dark:text-white">{t.chordProFormatGuide}</h2>
+          <h2 className="text-xl font-semibold mb-4 dark:text-white">How to Write a Song in ChordPro Format</h2>
           <ul className="list-disc list-inside space-y-2 dark:text-gray-300">
-            <li>Use square brackets for chords: [C] [Am] [F] [G]</li>
-            <li>Place chords directly before the syllable they're played on</li>
-            <li>Use curly braces for directives: {'{title: Song Title}'}</li>
-            <li>Common directives: title, subtitle, artist, key, tempo</li>
-            <li>Use # for comments: # This is a comment</li>
+            <li>Use square brackets for chords: `[C]`, `[Am]`, `[F]`, `[G]`.</li>
+            <li>Place chords directly before the syllable they’re played on.</li>
+            <li>Use curly braces for section headers or directives like `{`start_of_intro`}`, `{`end_of_intro`}`, `{`soc: chorus`}`, etc.</li>
+            <li>Common directives include `title`, `artist`, `album`, `key`, and `tempo`.</li>
+            <li>Optional: Add base notes to chords using slash notation, like `[C/G]`.</li>
+            <li>Use `/` to separate chords in progression or repeated measures.</li>
+            <li>End each section with `{`eoc`}`, `{`eov`}`, or `{`eop`}` to indicate section closure.</li>
           </ul>
           <div className="mt-6">
             <h3 className="text-lg font-semibold mb-2 dark:text-white">Example:</h3>
-            <pre className={`p-4 rounded-md bg-gray-100 dark:bg-gray-800 dark:text-white`}>
-              {`{title: Happy Birthday}
-{artist: Traditional}
+            <div className="p-4 rounded-md bg-gray-100 dark:bg-gray-800 dark:text-white sm:p-6 lg:p-8">
+              <pre className="overflow-x-auto whitespace-pre-wrap break-words">
+                {`{start_of_intro: Intro}
+[Dm] / [Am/C] / [G] / [G] / [F] / [C]
+{end_of_intro}
 
-[C]Happy [G]birthday to [C]you
-[C]Happy [F]birthday to [C]you
-[C]Happy [F]birthday dear [G]friend
-[C]Happy [G]birthday to [C]you`}
-            </pre>
+{start_of_verse: Verse}
+[C]An empty street, an [G]empty house  
+[Em]A hole inside my [Am]heart  
+[F]I'm all alone, the [F]rooms are getting [G]smaller  
+{end_of_verse}
+
+{sop: Pre Chorus}
+And [F]oh, my [G]love  
+I'm [C]holding on for[Am]ever  
+{eop}
+
+{soc: Chorus}
+So I [F]say a little [C]prayer  
+And hope my [F]dreams will take me [C]there  
+Where the [F]skies are blue, to [C]see you [Am]once a[D]gain, my [G]love  
+{eoc}`}
+              </pre>
+            </div>
           </div>
         </div>
       </main>

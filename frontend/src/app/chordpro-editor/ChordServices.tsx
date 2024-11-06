@@ -2,44 +2,9 @@ import React from 'react'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import { GState } from 'jspdf'
-import { ThiSoProps, postSong, updateSong } from '../../services/songService'
-import { Song, Line, ChordProParser } from 'chordsheetjs';
+import { postSong, updateSong } from '../../services/songService'
 import ChordSheetJS from "chordsheetjs"
 import { Chord } from 'chordsheetjs';
-// import { parseChord } from 'chordsheetjs';
-// import { useAuth } from '@/contexts/AuthContext'
-
-
-
-const CHORDS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const CHORD_ALIASES = {
-  'Db': 'C#',
-  'Eb': 'D#',
-  'Gb': 'F#',
-  'Ab': 'G#',
-  'Bb': 'A#'
-};
-
-export const transposeChord = (chord: string, semitones: number): string => {
-  // Split the chord into root note and quality (e.g., "Am" -> ["A", "m"])
-  const match = chord.match(/^([A-G][#b]?)(.*)$/);
-  if (!match) return chord;
-
-  const [, root, quality] = match;
-
-  // Handle flat to sharp conversion
-  const normalizedRoot = CHORD_ALIASES[root as keyof typeof CHORD_ALIASES] || root;
-
-  // Find the current index in the CHORDS array
-  let currentIndex = CHORDS.indexOf(normalizedRoot);
-  if (currentIndex === -1) return chord;
-
-  // Calculate new index with wrapping
-  let newIndex = (currentIndex + semitones + CHORDS.length) % CHORDS.length;
-
-  // Return the new chord with the original quality
-  return CHORDS[newIndex] + quality;
-};
 
 export const handleUpload = (
   e: React.ChangeEvent<HTMLInputElement>,
@@ -95,169 +60,6 @@ export const handleUpload = (
   }
 }
 
-// Helper function to transpose chords in a line of text
-const transposeLineChords = (line: string, transpose: number): string => {
-  // First handle compound chords (e.g., "D#m-C#-")
-  line = line.replace(/([A-G][#b]?(?:m|maj|dim|aug|sus|add)?[0-9]*)(?:-[A-G][#b]?(?:m|maj|dim|aug|sus|add)?[0-9]*)*-/g, (match) => {
-    const chords = match.split('-').filter(Boolean);
-    return chords.map(chord => transposeChord(chord, transpose)).join('-') + '-';
-  });
-
-  // Then handle single chords with spaces and slashes
-  line = line.replace(/([A-G][#b]?(?:m|maj|dim|aug|sus|add)?[0-9]*)(?=\s|\/|$)/g, (chord) => {
-    return transposeChord(chord, transpose);
-  });
-
-  return line;
-};
-
-export const renderChordPro = (text: string, transpose: number = 0) => {
-  const lines = text.split('\n');
-  let isChorus = false;
-  let isSoloOrMusic = false;
-  const renderedLines: React.ReactNode[] = [];
-  let chorusContent: React.ReactNode[] = [];
-  let soloContent: React.ReactNode[] = [];
-
-  lines.forEach((line, lineIndex) => {
-    // Check if line starts a SOLO or MUSIC section
-    if (/^\[(SOLO|MUSIC):.*$/i.test(line.trim())) {
-      isSoloOrMusic = true;
-      soloContent = [];
-      // Extract and transpose the chords in the header line
-      const headerParts = line.trim().split(':');
-      const header = headerParts[0] + ': ';
-      const chordsSection = headerParts[1].slice(0, -1); // Remove trailing bracket
-      const transposedChords = transposeLineChords(chordsSection, transpose);
-
-      soloContent.push(
-        <p key={`header-${lineIndex}`} className="text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-700 font-semibold px-2 py-1 rounded mt-4 mb-2">
-          {header + transposedChords + ']'}
-        </p>
-      );
-    }
-    // Check if line ends the SOLO/MUSIC section (ends with ']')
-    else if (isSoloOrMusic && line.trim().endsWith(']')) {
-      isSoloOrMusic = false;
-      // Add the last line with transposed chords
-      const transposedLine = transposeLineChords(line.trim(), transpose);
-      soloContent.push(
-        <div key={`solo-line-${lineIndex}`} className="bg-gray-100 dark:bg-gray-700 p-2">
-          {transposedLine}
-        </div>
-      );
-      // Add the complete SOLO/MUSIC section
-      renderedLines.push(
-        <div key={`solo-section-${lineIndex}`} className="bg-gray-100 dark:bg-gray-700 rounded-md mb-2">
-          {soloContent}
-        </div>
-      );
-    }
-    // Handle lines within SOLO/MUSIC section
-    else if (isSoloOrMusic) {
-      const transposedLine = transposeLineChords(line.trim(), transpose);
-      soloContent.push(
-        <div key={`solo-line-${lineIndex}`} className="bg-gray-100 dark:bg-gray-700 p-2">
-          {transposedLine}
-        </div>
-      );
-    }
-    // Handle other existing cases
-    else if (line.trim() === '{start_of_chorus}') {
-      isChorus = true;
-      chorusContent = [];
-    } else if (line.trim() === '{end_of_chorus}') {
-      isChorus = false;
-      renderedLines.push(
-        <div key={`chorus-${lineIndex}`} className="bg-gray-100 dark:bg-gray-700 p-2 rounded-md mb-2">
-          {chorusContent}
-        </div>
-      );
-    } else if (/^\[(Verse|Chorus|Bridge|Intro|Outro|Pre-Chorus|Pre Chorus|SOLO|MUSIC).*?\]$/i.test(line.trim())) {
-      // This regex matches section headers like [Verse 1], [Chorus], [Bridge], etc.
-      renderedLines.push(
-        <p key={lineIndex} className="text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-700 font-semibold px-2 py-1 rounded mt-4 mb-2">
-          {line.trim()}
-        </p>
-      );
-    } else if (line.startsWith('{') && line.endsWith('}')) {
-      if (line.toLowerCase().includes('comment:')) {
-        const commentText = line.slice(1, -1).trim().replace(/^comment:\s*/i, '');
-        renderedLines.push(
-          <p key={lineIndex} className="text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-700 italic px-2 py-1 rounded">
-            {commentText}
-          </p>
-        );
-      } else {
-        renderedLines.push(<p key={lineIndex} className="text-gray-500 italic">{line}</p>);
-      }
-    } else if (line.startsWith('#')) {
-      renderedLines.push(<p key={lineIndex} className="text-gray-500">{line}</p>);
-    } else {
-      const parts = line.split(/(\[[^\]]+\])/);
-      const renderedParts: React.ReactNode[] = [];
-      let lyricLine = '';
-
-      parts.forEach((part, index) => {
-        if (part.startsWith('[') && part.endsWith(']')) {
-          const chord = part.slice(1, -1);
-          const transposedChord = transposeChord(chord, transpose);
-          // Adjusted positioning calculation
-          const position = lyricLine.length * 0.5; // Reduced from 0.6 to 0.5
-          renderedParts.push(
-            <span
-              key={`chord-${index}`}
-
-              className="text-blue-500 font-bold absolute"
-              style={{
-                left: `${position}em`,
-                top: '-1.5em', // Adjusted from -1.2em to -1.5em for better vertical alignment
-                whiteSpace: 'nowrap',
-                transform: 'translateX(-25%)', // Added to center the chord above the syllable
-              }}
-            >
-              {transposedChord}
-            </span>
-          );
-        } else {
-          lyricLine += part;
-          renderedParts.push(
-            <span key={`lyric-${index}`}>
-              {part}
-              {/* Add a small space only if there's a chord following */}
-              {index < parts.length - 2 && parts[index + 1].startsWith('[') ? ' ' : ''}
-            </span>
-          );
-        }
-      });
-
-      const lineContent = (
-        <div
-          key={lineIndex}
-          className={`font-mono relative ${isChorus ? 'bg-gray-100 dark:bg-gray-700 px-2' : ''}`}
-          style={{
-            marginTop: '2em', // Increased from 1.5em to 2em to accommodate chord positioning
-            lineHeight: '1.5em',
-            position: 'relative'
-          }}
-        >
-          {renderedParts}
-        </div>
-      );
-
-      if (isChorus) {
-        chorusContent.push(lineContent);
-      } else {
-        renderedLines.push(lineContent);
-      }
-    }
-  });
-
-  // return { title, artist, renderedLines };
-  return { renderedLines };
-}
-
-
 export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
   // const parser = new ChordProParser();
   const parser = new ChordSheetJS.ChordProParser();
@@ -271,8 +73,31 @@ export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
       };
     }
 
-    const song = parser.parse(text);
+    // const song = parser.parse(text);
     // if (transpose !== 0) song.transpose(transpose);
+    let song: any;
+    try {
+      song = parser.parse(text);
+      // return { song, error: null };
+    } catch (error) {
+      // Split text into lines and find the line causing the error
+      const lines = text.split('\n');
+      let errorLine = '';
+
+      for (let i = 0; i < lines.length; i++) {
+        try {
+          parser.parse(lines[i]); // Attempt to parse each line individually
+        } catch (lineError) {
+          errorLine = lines[i];  // Capture the line causing the error
+          break;
+        }
+      }
+
+      return {
+        renderedLines: [<p key="error" className="text-red-500">Error parsing chord sheet at `{errorLine}`</p>],
+        renderErrorFlg: true
+      };
+    }
 
     const renderedLines: any[] = [];
     let isInChordOnlyPart = false;
@@ -292,17 +117,20 @@ export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
             <div key={index} className="relative flex flex-col items-center mr-1">
               {line.type && item?._value && (
                 <span
-                  className="text-blue-500 font-bold absolute"
+                  className={`font-bold absolute ${item._originalName === 'comment' ? 'text-gray-400' : 'text-blue-500'}`}
                   style={{
                     left: `1em`,
                     top: '-1.5em', // Adjusted from -1.2em to -1.5em for better vertical alignment
                     whiteSpace: 'nowrap',
                     transform: 'translateX(-25%)', // Added to center the chord above the syllable
                     marginTop: '2em',
+                    width: item._originalName === 'comment' ? '100%' : 'auto',
+                    textOverflow: item._originalName === 'comment' ? 'clip' : 'ellipsis',
+                    overflow: item._originalName === 'comment' ? 'visible' : 'hidden',
                   }}
                 // className="text-blue-500 font-bold"
                 >
-                  {item._value || ' '}:
+                  {item._value || ' '}{item._originalName === 'comment' ? '' : ':'}
                 </span>
               )}
               {item.chords && (
@@ -321,7 +149,7 @@ export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
                   }}
                 // className="text-blue-500 font-bold"
                 >
-                  {Chord.parse(item.chords)?.transpose(transpose).toString() || ''}
+                  {Chord.parse(item.chords)?.transpose(transpose).toString() || ' '}
 
                 </span>
               )}
@@ -348,6 +176,7 @@ export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
     };
 
     song.lines.forEach((line: any, lineIndex: any) => {
+      console.log(line)
       const directive = line.items[0]?._name;
       const annotation = line.items[0]?.annotation;
       const chordStartDirectives: string[] = [
@@ -413,9 +242,6 @@ export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
     };
   }
 };
-
-
-
 
 export const handleDownload = async (element: HTMLElement, title: string) => {
   const canvas = await html2canvas(element)
