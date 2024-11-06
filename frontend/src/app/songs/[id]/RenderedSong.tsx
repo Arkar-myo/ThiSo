@@ -33,7 +33,7 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState(0.5); // Default speed is 0.5x
   const scrollIntervalRef = useRef<NodeJS.Timeout>();
-  // const { user, isLoading } = useAuth()
+  const [delayAmount, setDelayAmount] = useState(70);
 
   // Add state for tracking likes locally
   const [localSongData, setLocalSongData] = useState(songData);
@@ -55,11 +55,9 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
         await saveSong(localSongData.id); // Call the save song API
         toast.success('Song saved successfully');
       }
-      // setIsSaved(!isSaved); // Toggle the saved state
     } catch (error) {
       toast.error('Failed to save/unsave song');
     } finally {
-      // setIsSubmitting(false);
     }
   };
 
@@ -127,27 +125,27 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
 
   const getScrollAmount = () => {
     // Adjust base amount and add minimum scroll amount
-    const baseScrollAmount = 0.5; // Increased base amount
-    const minScrollAmount = 0.01; // Decreased minimum scroll amount
-    const scrollAmountMultiplier = 5; // Increased multiplier
+    const baseScrollAmount = 0.5; // Decreased initial base amount
+    const minScrollAmount = 0.05; // Minimum scroll amount
+    const scrollAmountMultiplier = 10; // Multiplier
     return Math.max(baseScrollAmount * scrollSpeed * scrollAmountMultiplier, minScrollAmount);
   };
-
+  
   const handleAutoScroll = () => {
     const newIsScrolling = !isScrolling;
     setIsScrolling(newIsScrolling);
-
+  
     if (scrollIntervalRef.current) {
       clearInterval(scrollIntervalRef.current);
       scrollIntervalRef.current = undefined;
     }
-
+  
     if (newIsScrolling && previewRef.current) {
       scrollIntervalRef.current = setInterval(() => {
         if (previewRef.current) {
           const { scrollTop, scrollHeight, clientHeight } = previewRef.current;
-          const isAtBottom = scrollTop + clientHeight >= scrollHeight;
-
+          const isAtBottom = Math.abs(scrollHeight - (scrollTop + clientHeight)) < 1; // Check for near-bottom
+  
           if (!isAtBottom) {
             const scrollAmount = getScrollAmount();
             previewRef.current.scrollTop += scrollAmount;
@@ -157,7 +155,7 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
             setIsScrolling(false);
           }
         }
-      }, 16);
+      }, delayAmount);
     }
   };
 
@@ -166,6 +164,7 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
       const newSpeed = Math.min(Math.round((prev + 0.1) * 10) / 10, 1.5);
       return newSpeed;
     });
+    setDelayAmount(delayAmount - 10);
   };
 
   const handleSpeedDecrease = () => {
@@ -173,6 +172,7 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
       const newSpeed = Math.max(Math.round((prev - 0.1) * 10) / 10, 0.1);
       return newSpeed;
     });
+    setDelayAmount(delayAmount + 10);
   };
 
   useEffect(() => {
@@ -196,14 +196,14 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
 
             if (scrollTop + clientHeight < scrollHeight) {
               const scrollAmount = getScrollAmount();
-              previewRef.current.scrollTop += scrollAmount;
+              previewRef.current.scrollTop += 1;
             } else {
               clearInterval(scrollIntervalRef.current);
               scrollIntervalRef.current = undefined;
               setIsScrolling(false);
             }
           }
-        }, 50);
+        }, delayAmount);
       }
     }
   }, [scrollSpeed, isScrolling]);

@@ -176,7 +176,6 @@ export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
     };
 
     song.lines.forEach((line: any, lineIndex: any) => {
-      console.log(line)
       const directive = line.items[0]?._name;
       const annotation = line.items[0]?.annotation;
       const chordStartDirectives: string[] = [
