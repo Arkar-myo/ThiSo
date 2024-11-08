@@ -186,6 +186,7 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
                   </h1>
                   <div className="space-y-0.5">
                     <p className="text-sm text-muted-foreground">by {songData.singer}</p>
+                    <p className="text-sm text-muted-foreground">Viewed: {songData.viewCount}</p>
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <span>Key: {songData.key || "-"}</span>
                       <span>•</span>
@@ -206,6 +207,7 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
                   isLoggedIn={user?.id ? true : false}
                   onSaveInclude={true}
                   userData={user || undefined}
+                  viewCountInclude={false}
                 />
               </div>
             </div>

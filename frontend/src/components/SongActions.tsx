@@ -51,6 +51,7 @@ interface SongActionsProps {
     isLoggedIn?: boolean;
     onSave: () => void;
     onSaveInclude?: boolean;
+    viewCountInclude?:boolean;
     isSaved?: boolean;
     userData?: User;
 }
@@ -67,7 +68,8 @@ export default function SongActions({
     disabled = false,
     isLoggedIn,
     onSave,
-    onSaveInclude
+    onSaveInclude,
+    viewCountInclude = true,
 
 }: SongActionsProps) {
     const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
@@ -135,13 +137,13 @@ export default function SongActions({
     return (
         <div className={`flex items-center space-x-2 ${className}`}>
             <div className="flex items-center space-x-1">
-                <Button variant="ghost"
+                {viewCountInclude && <Button variant="ghost"
                     size="sm"
                     className="space-x-2 w-20 justify-start"
                     disabled={disabled}>
                     <Eye className="h-4 w-4" />
                     <span>{formattedViewCount(songData.viewCount || 0)}</span>
-                </Button>
+                </Button>}
                 <Button
                     variant="ghost"
                     size="sm"
