@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react';
-import { Bookmark, Heart, MoreHorizontal } from 'lucide-react';
+import { Bookmark, Heart, Loader2, MoreHorizontal } from 'lucide-react';
 import { Song } from '@/services/songService';
 import { Button } from './ui/button';
 
@@ -87,6 +87,11 @@ export default function SongCard({
           userData={userData}
         />
       </div>
+      {isNavigating && (
+        <div className="fixed inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-50 overflow-hidden">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )}
     </div>
   );
 
