@@ -52,7 +52,7 @@ const ControlBar: React.FC<ControlBarProps> = ({
   }
   return (
     <div className="fixed  bottom-4 left-2 right-2 sm:left-1/2 sm:-translate-x-1/2 sm:w-[500px] sm:max-w-[95%]">
-      <div className="bg-white/90 bg-gray-400 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-800/50">
+      <div className="bg-gray-400 backdrop-blur-md rounded-2xl shadow-lg border border-gray-200/50 dark:border-gray-800/50">
         <div className="flex items-center justify-center p-3 gap-3">
           {/* Font & Key Controls - Visible only on Desktop */}
           <div className="hidden sm:flex items-center gap-4">
