@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 // Main Profile Component
-export default function Profile({ params }: { params: { id: string } }) {
+export default function Profile() {
 
   const { data: user, isLoading: userLoading, error: userError }: any = useQuery({
     queryKey: ['profile'],
