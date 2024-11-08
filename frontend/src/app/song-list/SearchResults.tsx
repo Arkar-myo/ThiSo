@@ -37,7 +37,7 @@ export default function SearchResults({ query, onClearSearch }: SearchResultsPro
   };
 
   const { data, isLoading } = useQuery({
-    queryKey: ['songs', 'search', query, page],
+    queryKey: ['song', 'search', query],
     queryFn: async () => {
       const response = await searchSongs(query, page);
       return response;

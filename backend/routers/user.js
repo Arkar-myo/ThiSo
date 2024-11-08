@@ -88,44 +88,45 @@ router.get("/users", auth, async (req, res) => {
     }
 });
 
-router.get("/users/:id", auth, async (req, res) => {
-    const { id } = req.params;
+router.get("/users/profile", auth, async (req, res) => {
+    const user = res.locals.user;
     try {
-        const data = await prisma.user.findUnique({
-            where: { id: id },
-            select: {
-                ...PUBLIC_USER_FIELDS,
-                email,
-                songs: {
-                    select: {
-                        id: true,
-                        title: true,
-                        singer: true,
-                        writer: true,
-                        album: true,
-                        key: true,
-                        tempo: true,
-                        viewCount: true,
-                        created: true,
-                        updatedAt: true,
-                    },
-                    orderBy: {
-                        updatedAt: 'desc'
-                    }
-                },
-                songLikes: {
-                    select: {
-                        id: true,
-                        songId: true,
-                        created: true,
-                    },
-                    orderBy: {
-                        created: 'desc'
-                    },
-                    take: 5
-                },
-            },
-        });
+        const data = await
+            prisma.user.findUnique({
+                where: { id: user.id },
+                // select: {
+                //     ...PUBLIC_USER_FIELDS,
+                //     email,
+                //     songs: {
+                //         select: {
+                //             id: true,
+                //             title: true,
+                //             singer: true,
+                //             writer: true,
+                //             album: true,
+                //             key: true,
+                //             tempo: true,
+                //             viewCount: true,
+                //             created: true,
+                //             updatedAt: true,
+                //         },
+                //         orderBy: {
+                //             updatedAt: 'desc'
+                //         }
+                //     },
+                //     songLikes: {
+                //         select: {
+                //             id: true,
+                //             songId: true,
+                //             created: true,
+                //         },
+                //         orderBy: {
+                //             created: 'desc'
+                //         },
+                //         take: 5
+                //     },
+                // },
+            });
         if (!data) {
             console.log('❌ GET /users/:id - Error: User not found');
             return res.status(404).json({ msg: "User not found" });
@@ -449,7 +450,7 @@ router.post("/verify-email", async (req, res) => {
                 verificationExpires: null
             }
         });
-
+        console.log('✅ POST /verify-email - Success:');
         res.json({ msg: "Email verified successfully" });
     } catch (e) {
         console.error('❌ POST /verify-email - Error:', e.message);
@@ -586,10 +587,32 @@ router.post("/forgot-password", async (req, res) => {
                 </html>
             `
         });
-
+        console.log('✅ POST /forgot-password - Success: Sent Email: ', {email: email});
         res.json({ msg: "Password reset instructions sent to email" });
     } catch (e) {
         console.error('❌ POST /forgot-password - Error:', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Change Password
+router.get("/change-password", auth, async (req, res) => {
+    try {
+        const user = res.locals.user;
+        const resetToken = generateResetToken();
+        const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+        console.log('check toke--> ', resetToken)
+        await prisma.user.update({
+            where: { id: user.id },
+            data: {
+                resetPasswordToken: resetToken,
+                resetPasswordExpires: resetExpires
+            }
+        });
+        console.log('✅ POST /change-password - Success');
+        return res.json({token: resetToken});
+    } catch (e) {
+        console.error('❌ POST /change-password - Error:', e.message);
         res.status(500).json({ error: e.message });
     }
 });
@@ -630,51 +653,6 @@ router.post("/reset-password", async (req, res) => {
         res.json({ msg: "Password has been reset successfully" });
     } catch (e) {
         console.error('❌ POST /reset-password - Error:', e.message);
-        res.status(500).json({ error: e.message });
-    }
-});
-
-// Change password
-router.post("/change-password", auth, async (req, res) => {
-    const { currentPassword, newPassword } = req.body;
-    const user = res.locals.user;
-
-    if (!currentPassword || !newPassword) {
-        return res.status(400).json({ msg: "Current password and new password are required" });
-    }
-
-    try {
-        // Find the user in the database
-        const existingUser = await prisma.user.findUnique({
-            where: { id: user.id }
-        });
-
-        if (!existingUser) {
-            return res.status(404).json({ msg: "User not found" });
-        }
-
-        // Check if the current password is correct
-        const isMatch = await bcrypt.compare(currentPassword, existingUser.password);
-        if (!isMatch) {
-            return res.status(401).json({ msg: "Current password is incorrect" });
-        }
-
-        // Hash the new password
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-
-        // Update the user's password
-        await prisma.user.update({
-            where: { id: user.id },
-            data: {
-                password: hashedNewPassword,
-                resetPasswordToken: null,
-                resetPasswordExpires: null
-            }
-        });
-
-        res.json({ msg: "Password has been changed successfully" });
-    } catch (e) {
-        console.error('❌ POST /change-password - Error:', e.message);
         res.status(500).json({ error: e.message });
     }
 });

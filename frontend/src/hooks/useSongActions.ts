@@ -4,7 +4,6 @@ import { toggleLikeSong, deleteSong, saveSong, unsaveSong, Song } from '@/servic
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { User } from '@/services/userService';
 
 export const useSongActions = () => {
     const { user } = useAuth();
@@ -22,7 +21,7 @@ export const useSongActions = () => {
             return;
         }
 
-        const isLiked = song.songLikes?.some((like: any) => like.userId === user?.id) || false;
+        const isLiked = checkIsLiked(song) || false;
 
         // Optimistically update the UI
         queryClient.setQueryData([queryKey], (oldData: any) => {
@@ -45,7 +44,15 @@ export const useSongActions = () => {
             await toggleLikeSong(song.id, isLiked);
 
             // Only invalidate other related queries
-            await queryClient.invalidateQueries({ queryKey: ['songs', song.id] });
+            await queryClient.invalidateQueries({ queryKey: ['song', song.id] });
+            await queryClient.invalidateQueries({ queryKey: ['song', 'search'] });
+            await queryClient.invalidateQueries({ queryKey: ['postedSongs'] });
+            await queryClient.invalidateQueries({ queryKey: ['likedSongs'] });
+            await queryClient.invalidateQueries({ queryKey: ['savedSongs'] });
+            await queryClient.invalidateQueries({ queryKey: ['featured-songs'] });
+            await queryClient.invalidateQueries({ queryKey: ['most-liked-songs'] });
+            await queryClient.invalidateQueries({ queryKey: ['most-viewed-songs'] });
+            await queryClient.invalidateQueries({ queryKey: ['popular-songs'] });
 
             toast.success(isLiked ? 'Song unliked' : 'Song liked');
         } catch (error) {
@@ -92,19 +99,18 @@ export const useSongActions = () => {
     };
 
     const checkIsLiked = (song: Song) => {
-        return song.songLikes?.some((like) => like.userId === user?.id) || false;
+        return song?.songLikes?.length ? song.songLikes?.some((like) => like.userId === user?.id) : false;
     }
 
     const checkIsSaved = (song: Song) => {
         return (
-            song.savedSongs?.some(save => {
-                return save.songId === song.id
-                    && save.userId === user?.id;
-            }) || false
+            song?.savedSongs?.length ?
+            song.savedSongs?.some(save => save.userId === user?.id) 
+            : false
         );
     }
 
-    const handleSaveToggle = async (song: any, queryKey: string) => {
+    const handleSaveToggle = async (song: Song, queryKey: string) => {
         if (isLoading) return;
         setIsLoading(true);
 
@@ -114,9 +120,7 @@ export const useSongActions = () => {
             return;
         }
 
-        const isSaved = song.savedSongs?.some(
-            (save: any) => save.songId === song.id && save.userId === user?.id
-        ) || false;
+        const isSaved = checkIsSaved(song);
 
         // Optimistically update the UI
         queryClient.setQueryData([queryKey], (oldData: any) => {
@@ -142,7 +146,12 @@ export const useSongActions = () => {
             }
 
             // Invalidate related queries
-            await queryClient.invalidateQueries({ queryKey: ['songs', song.id] });
+            await queryClient.invalidateQueries({ queryKey: ['song', song.id] });
+            await queryClient.invalidateQueries({ queryKey: ['song', 'search'] });
+            await queryClient.invalidateQueries({ queryKey: ['postedSongs'] });
+            await queryClient.invalidateQueries({ queryKey: ['likedSongs'] });
+            await queryClient.invalidateQueries({ queryKey: ['savedSongs'] });
+            await queryClient.invalidateQueries({ queryKey: ['featured-songs'] });
             await queryClient.invalidateQueries({ queryKey: ['most-liked-songs'] });
             await queryClient.invalidateQueries({ queryKey: ['most-viewed-songs'] });
             await queryClient.invalidateQueries({ queryKey: ['popular-songs'] });

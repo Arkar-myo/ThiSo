@@ -3,17 +3,14 @@ const app = express();
 require("express-ws")(app);
 const prisma = require("./prismaClient");
 const cors = require("cors");
-// const { swaggerUi, swaggerSpec } = require('./swagger');
-
 const corsOptions = {
   origin: function(origin, callback) {
     const allowedOrigins = [
       'http://localhost:3000',
       process.env.FRONTEND_URL,
-      /^https?:\/\/.*\.ngrok-free\.app$/
     ];
     
-    if (!origin || allowedOrigins.some(allowed => {
+    if (origin || allowedOrigins.some(allowed => {
       if (allowed instanceof RegExp) {
         return allowed.test(origin);
       }

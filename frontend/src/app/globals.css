@@ -182,3 +182,12 @@ body {
 .swiper-button-prev-artists:disabled {
   @apply opacity-30 cursor-not-allowed;
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none; 
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

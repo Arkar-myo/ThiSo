@@ -68,8 +68,8 @@ export const renderThiSo = ({ text, transpose = 0, currentIndex = 0 }: any) => {
     if (!text || typeof text !== 'string') {
       return {
         renderedLines: [
-          <p key="error" className="text-red-500">Please type the songs. The rendered lyrics will be displayed here.</p>
-        ], renderErrorFlg: true,
+          <p key="error" className="text-green-500">The rendered lyrics will be displayed here.</p>
+        ], renderErrorFlg: false,
       };
     }
 

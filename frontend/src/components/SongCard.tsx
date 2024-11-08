@@ -18,7 +18,7 @@ interface SongCardProps {
   onDelete?: () => void;
   canManage?: boolean;
   isLoggedIn?: boolean;
-  onSave: (songId: string) => void;
+  onSave: () => void;
   isSaved?: boolean;
   userData?: User;
 }
@@ -66,7 +66,7 @@ export default function SongCard({
           variant="ghost"
           size="sm"
           className="space-x-2"
-          onClick={() => onSave(song.id)}
+          onClick={() => onSave()}
         >
           <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current text-yellow-500' : ''}`} />
         </Button>

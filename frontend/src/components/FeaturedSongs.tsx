@@ -11,7 +11,7 @@ import { toast } from 'sonner'
 import { useAuth } from '@/contexts/AuthContext'
 
 export default function FeaturedSongs() {
-  const { handleDelete, handleEdit, handleSaveToggle, user } = useSongActions();
+  const { handleDelete, handleEdit, handleSaveToggle, checkIsSaved, checkIsLiked, user } = useSongActions();
   const { language } = useLanguage()
   const t = translations[language]
   const queryClient = useQueryClient();
@@ -28,7 +28,7 @@ export default function FeaturedSongs() {
       return;
     }
 
-    const isLiked = song.songLikes?.some((like: any) => like.userId === user?.id) || false;
+    const isLiked = checkIsLiked(song);
 
     // Optimistically update the UI immediately
     queryClient.setQueryData(['featured-songs'], (oldData: any) => {
@@ -52,7 +52,7 @@ export default function FeaturedSongs() {
       await toggleLikeSong(song.id, isLiked);
 
       // Only invalidate other related queries
-      await queryClient.invalidateQueries({ queryKey: ['songs', song.id] });
+      await queryClient.invalidateQueries({ queryKey: ['song', song.id] });
       await queryClient.invalidateQueries({ queryKey: ['most-liked-songs'] });
       await queryClient.invalidateQueries({ queryKey: ['popular-songs'] });
 
@@ -141,8 +141,8 @@ export default function FeaturedSongs() {
                 // }}
                 onLike={() => handleLike(song)}
                 onSave={() => handleSaveToggle(
-                  (song.savedSongs?.some((eachSave) => eachSave.songId === song.id && eachSave.userId === user?.id)),
-                  song.id
+                  song,
+                  'featured-songs'
                 )}
                 isLiked={song.songLikes?.some((like) => like.userId === user?.id) || false}
                 isSaved={song.savedSongs?.some((eachSave) => eachSave.songId === song.id

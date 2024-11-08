@@ -25,7 +25,7 @@ export interface Song {
   savedSongs?: {
     songId: string,
     userId: string
-  } [];
+  }[];
 }
 
 export interface ThiSoProps {
@@ -71,22 +71,22 @@ export const getSongById = async (id: string): Promise<Song> => {
 };
 
 export interface PaginatedResponse {
-    songs: Song[];
-    pagination: {
-        currentPage: number;
-        totalPages: number;
-        totalSongs: number;
-        hasMore: boolean;
-    };
+  songs: Song[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalSongs: number;
+    hasMore: boolean;
+  };
 }
 
 export const searchSongs = async (query: string, page: number = 1): Promise<PaginatedResponse> => {
-    const response = await fetch(`${API_URL}/songs/search?q=${encodeURIComponent(query)}&page=${page}`);
-    if (!response.ok) {
-        throw new Error('Failed to search songs');
-    }
-    const data = await response.json();
-    return data;
+  const response = await fetch(`${API_URL}/songs/search?q=${encodeURIComponent(query)}&page=${page}`);
+  if (!response.ok) {
+    throw new Error('Failed to search songs');
+  }
+  const data = await response.json();
+  return data;
 };
 
 export const postSong = async (songData: CreateSongDto): Promise<Song> => {
@@ -138,13 +138,15 @@ export const updateSong = async (id: string, songData: CreateSongDto): Promise<S
 //   }
 // };
 
-export const toggleLikeSong = async (id: string, isLiked: boolean): Promise<void> => {
+export const toggleLikeSong = async (id: string, isLiked: boolean): Promise<any> => {
   try {
+    let response;
     if (isLiked) {
-      await axiosInstance.delete(`${API_URL}/unlike/songs/${id}`);
+      response = await axiosInstance.delete(`${API_URL}/unlike/songs/${id}`);
     } else {
-      await axiosInstance.post(`${API_URL}/like/songs/${id}`);
+      response = await axiosInstance.post(`${API_URL}/like/songs/${id}`);
     }
+    return response.data;
   } catch (error) {
     console.error('Error toggling song like:', error);
     throw new Error('Failed to toggle song like');
@@ -291,20 +293,52 @@ export const deleteReport = async (reportId: string): Promise<void> => {
   }
 };
 
-export const saveSong = async (songId: string): Promise<void> => {
-    try {
-        await axiosInstance.post(`${API_URL}/saved-songs`, { songId });
-    } catch (error) {
-        console.error('Error saving song:', error);
-        throw new Error('Failed to save song');
-    }
-};
-
-export const unsaveSong = async (songId: string): Promise<void> => {
+export const saveSong = async (songId: string): Promise<any> => {
   try {
-      await axiosInstance.delete(`${API_URL}/saved-songs/${songId}`);
+    const response = await axiosInstance.post(`${API_URL}/saved-songs`, { songId });
+    return response.data;
   } catch (error) {
-      console.error('Error saving song:', error);
-      throw new Error('Failed to save song');
+    console.error('Error saving song:', error);
+    throw new Error('Failed to save song');
   }
 };
+
+export const unsaveSong = async (songId: string): Promise<any> => {
+  try {
+    const response = await axiosInstance.delete(`${API_URL}/saved-songs/${songId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error saving song:', error);
+    throw new Error('Failed to save song');
+  }
+};
+
+export const getPostedSongs = async (): Promise<Song[]> => {
+  try {
+    const response = await axiosInstance.get<Song[]>(`${API_URL}/songs/posted-songs`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching posted songs:', error);
+    throw new Error('Failed to fetch featured artists');
+  }
+}
+
+export const getSavedSongs = async (): Promise<Song[]> => {
+  try {
+    const response = await axiosInstance.get<Song[]>(`${API_URL}/songs/saved-songs`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching saved songs:', error);
+    throw new Error('Failed to fetch saved songs');
+  }
+}
+
+export const getLikedSongs = async (): Promise<Song[]> => {
+  try {
+    const response = await axiosInstance.get<Song[]>(`${API_URL}/songs/liked-songs`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching liked songs:', error);
+    throw new Error('Failed to fetch liked songs');
+  }
+}

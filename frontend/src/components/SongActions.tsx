@@ -1,4 +1,4 @@
-import React, { useActionState, useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Eye, Heart, MessageCircle, MoreVertical, Edit2, Trash2, Flag, Bookmark } from 'lucide-react';
 import { Button } from './ui/button';
 import {
@@ -36,13 +36,10 @@ import {
 import { Textarea } from "./ui/textarea";
 import { toastFunc } from '@/hooks/use-toast';
 import { toast } from 'sonner';
-import { ReportReason, reportSong, saveSong, Song, unsaveSong } from '@/services/songService';
+import { ReportReason, reportSong, Song } from '@/services/songService';
 import { User } from '@/services/userService';
 
 interface SongActionsProps {
-    // viewCount: number;
-    // likeCount: number;
-    // commentCount: number;
     songData: Song;
     onLike: () => void;
     isLiked: boolean;
@@ -51,9 +48,8 @@ interface SongActionsProps {
     canManage?: boolean;
     className?: string;
     disabled?: boolean;
-    // songId: string;
     isLoggedIn?: boolean;
-    onSave: (songId: string) => void;
+    onSave: () => void;
     onSaveInclude?: boolean;
     isSaved?: boolean;
     userData?: User;
@@ -69,34 +65,15 @@ export default function SongActions({
     canManage,
     className = "",
     disabled = false,
-    // songId,
     isLoggedIn,
     onSave,
-    onSaveInclude,
-    userData,
+    onSaveInclude
 
 }: SongActionsProps) {
     const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
     const [reportReason, setReportReason] = useState<ReportReason | ''>('');
     const [reportDescription, setReportDescription] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
-    // const [isSaved, setIsSaved] = useState(false);
-    // const [isLiked, setIsLiked] = useState(false);
-
-    // Initialize isSaved based on songData when the component mounts
-    useEffect(() => {
-        const saved = songData.savedSongs?.some((eachSave) => eachSave.songId === songData.id && eachSave.userId === userData?.id);
-        // setIsSaved(saved || false);
-        isSaved = saved || false;
-    }, [songData, userData]);
-
-    // if(songData.savedSongs?.some((eachSave) => eachSave.songId === songData.id && eachSave.userId === userData?.id)) {
-    //     setIsSaved(true);
-    // }
-
-    // if(songData.songLikes?.some((eachLike) => eachLike.userId === userData?.id)) {
-    //     setIsLiked(true);
-    // }
 
     const handleReport = async () => {
         if (!reportReason) {
@@ -143,61 +120,39 @@ export default function SongActions({
         }
     };
 
-    // const handleSave = async () => {
-    //     if (!isLoggedIn) {
-    //         toast.error('Please login to save songs');
-    //         return;
-    //     }
-
-    //     try {
-    //         await saveSong(songId);
-    //         toast.success('Song saved successfully');
-    //     } catch (error) {
-    //         toast.error('Failed to save song');
-    //     }
-    // };
-
-    const handleSaveToggleInSongPage = async () => {
-        if (!isLoggedIn) {
-            toast.error('Please login to save songs');
-            return;
+    const formattedViewCount = (count: number) => {
+        if (count >= 10000) {
+          return `${(count / 1000).toFixed(1)}k`
+        } else if (count >= 2000) {
+          return `${Math.floor(count / 1000)}k`
+        } else if (count >= 1000) {
+          return `+${Math.floor(count / 1000)}k`
+        } else {
+          return count.toString()
         }
-
-        setIsSubmitting(true);
-        try {
-            if (isSaved) {
-                await unsaveSong(songData.id); // Call the delete saved song API
-                toast.success('Song unsaved successfully');
-            } else {
-                await saveSong(songData.id); // Call the save song API
-                toast.success('Song saved successfully');
-            }
-            // setIsSaved(!isSaved); // Toggle the saved state
-        } catch (error) {
-            toast.error('Failed to save/unsave song');
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
+      }
 
     return (
         <div className={`flex items-center space-x-2 ${className}`}>
             <div className="flex items-center space-x-1">
-                <Button variant="ghost" size="sm" className="space-x-2" disabled={disabled}>
+                <Button variant="ghost"
+                    size="sm"
+                    className="space-x-2 w-20 justify-start"
+                    disabled={disabled}>
                     <Eye className="h-4 w-4" />
-                    <span>{songData.viewCount || 0}</span>
+                    <span>{formattedViewCount(songData.viewCount || 0)}</span>
                 </Button>
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="space-x-2"
+                    className="space-x-2 w-20 justify-start"
                     onClick={onLike}
                     disabled={disabled}
                 >
                     <Heart
                         className={`h-4 w-4 ${isLiked ? 'fill-current text-red-500' : ''}`}
                     />
-                    <span>{songData.songLikes?.length || 0}</span>
+                    <span>{formattedViewCount(songData.songLikes?.length || 0)}</span>
                 </Button>
                 {/* <Button variant="ghost" size="sm" className="space-x-2" disabled={disabled}>
                     <MessageCircle className="h-4 w-4" />
@@ -208,7 +163,7 @@ export default function SongActions({
                     size="sm"
                     className="space-x-2"
                     disabled={disabled}
-                    onClick={handleSaveToggleInSongPage}
+                    onClick={onSave}
                 >
                     <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-current text-yellow-500' : ''}`} />
                 </Button>}

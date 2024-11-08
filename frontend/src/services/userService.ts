@@ -87,12 +87,12 @@ export const login = async (credentials: LoginDto): Promise<AuthResponse> => {
   try {
     const response = await axiosInstance.post<AuthResponse>(`${API_URL}/login`, credentials);
     const { token, user } = response.data;
-    
+
     const tokenSet = setAuthToken(token);
     if (!tokenSet) {
       throw new Error('Token size too large');
     }
-    
+
     return response.data;
   } catch (error) {
     console.error('Login error:', error);
@@ -139,13 +139,13 @@ export const searchUsers = async (query: string): Promise<User[]> => {
   }
 };
 
-export const getUserById = async (id: string): Promise<User> => {
+export const getUserById = async (): Promise<User> => {
   try {
-    const response = await axiosInstance.get<User>(`${API_URL}/users/${id}`);
+    const response = await axiosInstance.get<User>(`${API_URL}/users/profile`);
     return response.data;
   } catch (error) {
-    console.error(`Error fetching user with id ${id}:`, error);
-    throw new Error(`Failed to fetch user with id ${id}`);
+    console.error(`Error fetching user data`, error);
+    throw new Error(`Failed to fetch user data`);
   }
 };
 
@@ -173,6 +173,16 @@ export const resetPassword = async (data: ResetPasswordDto): Promise<void> => {
   } catch (error) {
     console.error('Password reset error:', error);
     throw new Error('Failed to reset password');
+  }
+};
+
+export const changePassword = async (): Promise<any> => {
+  try {
+    const respoonse = await axiosInstance.get(`${API_URL}/change-password`);
+    return respoonse.data;
+  } catch (error) {
+    console.error('Password change password error:', error);
+    throw new Error('Failed to change password');
   }
 };
 

@@ -12,27 +12,27 @@ const PUBLIC_USER_FIELDS = {
 };
 
 const SONG_SELECT_FIELDS = {
-  select: {
-    id: true,
-    title: true,
-    singer: true,
-    writer: true,
-    album: true,
-    key: true,
-    tempo: true,
-    viewCount: true,
-    created: true,
-    updatedAt: true,
-    userId: true,
-    user: {
-      select: {
+    select: {
         id: true,
-        username: true
-      }
-    },
-    songLikes: true,
-    savedSongs: true
-  }
+        title: true,
+        singer: true,
+        writer: true,
+        album: true,
+        key: true,
+        tempo: true,
+        viewCount: true,
+        created: true,
+        updatedAt: true,
+        userId: true,
+        user: {
+            select: {
+                id: true,
+                username: true
+            }
+        },
+        songLikes: true,
+        savedSongs: true
+    }
 };
 
 // Create a new song
@@ -269,8 +269,8 @@ router.get("/songs/featured-artists", async (req, res) => {
         const formattedArtists = await Promise.all(
             artists.map(async (artist) => {
                 const songs = await prisma.song.findMany({
-                    where: { 
-                        singer: artist.singer 
+                    where: {
+                        singer: artist.singer
                     },
                     select: SONG_SELECT_FIELDS.select,
                     take: 3,
@@ -322,6 +322,71 @@ router.get("/songs/featured-artists", async (req, res) => {
     }
 });
 
+router.get("/songs/posted-songs", auth, async (req, res) => {
+    try {
+        const user = res.locals.user;
+        const songs = await prisma.song.findMany({
+            where: {
+                userId: user.id,
+            },
+            select: SONG_SELECT_FIELDS.select,
+            orderBy: { created: "desc" },
+
+        });
+
+        console.log(`✅ GET /songs/posted-songs - Success: Retrieved ${songs.length} posted songs`);
+        res.json(songs);
+    } catch (e) {
+        console.error('❌ GET /songs/posted-songs - Error:', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get("/songs/saved-songs", auth, async (req, res) => {
+    try {
+        const user = res.locals.user;
+        const songs = await prisma.song.findMany({
+            where: {
+                savedSongs: {
+                    some: {
+                        userId: user.id,
+                    },
+                },
+            },
+            select: SONG_SELECT_FIELDS.select,
+            orderBy: { created: "desc" },
+        });
+        console.log(`✅ GET /songs/saved-songs - Success: Retrieved ${songs.length} saved songs`);
+        res.json(songs);
+    } catch (e) {
+        console.error('❌ GET /songs/saved-songs - Error:', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.get("/songs/liked-songs", auth, async (req, res) => {
+    try {
+        const user = res.locals.user;
+        const songs = await prisma.song.findMany({
+            where: {
+                songLikes: {
+                    some: {
+                        userId: user.id,
+                    },
+                },
+            },
+            select: SONG_SELECT_FIELDS.select,
+            orderBy: { created: "desc" },
+        });
+
+        console.log(`✅ GET /songs/liked-songs - Success: Retrieved ${songs.length} liked songs`);
+        res.json(songs);
+    } catch (e) {
+        console.error('❌ GET /songs/liked-songs - Error:', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // Get a specific song
 router.get("/songs/:id", async (req, res) => {
     const { id } = req.params;
@@ -353,7 +418,7 @@ router.get("/songs/:id", async (req, res) => {
 });
 
 // Update a song
-router.put("/songs/:id", auth,isOwner("song"), async (req, res) => {
+router.put("/songs/:id", auth, isOwner("song"), async (req, res) => {
     const { id } = req.params;
     const { title, singer, writer, album, body, key, tempo } = req.body;
     try {
@@ -478,9 +543,9 @@ router.get("/likes/songs/:id", async (req, res) => {
 // });
 
 // Create a song report
-router.post("/songs/:id/report",auth, async (req, res) => {
+router.post("/songs/:id/report", auth, async (req, res) => {
     const { id } = req.params;
-    
+
     const { reason, description } = req.body;
     const user = res.locals.user;
 
@@ -635,315 +700,4 @@ router.delete("/reports/:id", auth, async (req, res) => {
     }
 });
 
-
-
 module.exports = { songRouter: router };
-/**
- * @swagger
- * components:
- *   schemas:
- *     Song:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         title:
- *           type: string
- *         singer:
- *           type: string
- *         writer:
- *           type: string
- *         album:
- *           type: string
- *         key:
- *           type: string
- *         tempo:
- *           type: integer
- *         viewCount:
- *           type: integer
- *         created:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
- *         userId:
- *           type: string
- *         user:
- *           $ref: '#/components/schemas/User'
- *         songLikes:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/SongLike'
- *         savedSongs:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/SavedSong'
- *     User:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         username:
- *           type: string
- *     SongLike:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         songId:
- *           type: string
- *         userId:
- *           type: string
- *     SavedSong:
- *       type: object
- *       properties:
- *         id:
- *           type: string
- *         songId:
- *           type: string
- *         userId:
- *           type: string
- */
-
-/**
- * @swagger
- * /songs:
- *   post:
- *     summary: Create a new song
- *     tags: [Songs]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               singer:
- *                 type: string
- *               writer:
- *                 type: string
- *               album:
- *                 type: string
- *               body:
- *                 type: string
- *               key:
- *                 type: string
- *               tempo:
- *                 type: integer
- *               userId:
- *                 type: string
- *     responses:
- *       201:
- *         description: Song created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Song'
- *       400:
- *         description: Bad request
- *       500:
- *         description: Internal server error
- *   get:
- *     summary: Get all songs with pagination
- *     tags: [Songs]
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *         description: Page number for pagination
- *     responses:
- *       200:
- *         description: Retrieved songs
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 songs:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Song'
- *                 pagination:
- *                   type: object
- *                   properties:
- *                     currentPage:
- *                       type: integer
- *                     totalPages:
- *                       type: integer
- *                     totalSongs:
- *                       type: integer
- *                     hasMore:
- *                       type: boolean
- *       500:
- *         description: Internal server error
- * 
- * /songs/search:
- *   get:
- *     summary: Search songs by query
- *     tags: [Songs]
- *     parameters:
- *       - in: query
- *         name: q
- *         schema:
- *           type: string
- *           description: Search query for songs
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *     responses:
- *       200:
- *         description: Search results
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 songs:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Song'
- *                 pagination:
- *                   $ref: '#/components/schemas/Pagination'
- *       500:
- *         description: Internal server error
- *
- * /songs/featured:
- *   get:
- *     summary: Get featured songs
- *     tags: [Songs]
- *     responses:
- *       200:
- *         description: Retrieved featured songs
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Song'
- *       500:
- *         description: Internal server error
- * 
- * /songs/popular:
- *   get:
- *     summary: Get popular songs based on engagement
- *     tags: [Songs]
- *     responses:
- *       200:
- *         description: Retrieved popular songs
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Song'
- *       500:
- *         description: Internal server error
- *
- * /songs/most-viewed:
- *   get:
- *     summary: Get most-viewed songs
- *     tags: [Songs]
- *     responses:
- *       200:
- *         description: Retrieved most-viewed songs
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Song'
- *       500:
- *         description: Internal server error
- *
- * /songs/most-liked:
- *   get:
- *     summary: Get most liked songs
- *     tags: [Songs]
- *     responses:
- *       200:
- *         description: Retrieved most liked songs
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Song'
- *       500:
- *         description: Internal server error
- * 
- * /songs/featured-artists:
- *   get:
- *     summary: Get featured artists with most songs
- *     tags: [Songs]
- *     responses:
- *       200:
- *         description: Retrieved featured artists
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/User'
- *       500:
- *         description: Internal server error
- * 
- * /songs/{id}:
- *   get:
- *     summary: Get a specific song by ID
- *     tags: [Songs]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The song ID
- *     responses:
- *       200:
- *         description: Retrieved specific song
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Song'
- *       404:
- *         description: Song not found
- *       500:
- *         description: Internal server error
- *
- * /songs/{id}/report:
- *   post:
- *     summary: Report a song
- *     tags: [Songs]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: The song ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               reason:
- *                 type: string
- *               description:
- *                 type: string
- *     responses:
- *       200:
- *         description: Report created
- *       400:
- *         description: Bad request
- *       500:
- *         description: Internal server error
- */

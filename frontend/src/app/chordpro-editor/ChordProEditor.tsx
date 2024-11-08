@@ -142,7 +142,7 @@ const ChordProEditor: React.FC<{ initialData: Song | null }> = ({ initialData })
               </Button> */}
               <Button onClick={onSave}
                 className="flex-grow sm:flex-grow-0"
-                disabled={isRenderError}
+                disabled={isRenderError || !chordProInput}
               >
                 <Upload className="h-4 w-4 mr-2" />
                 Upload
