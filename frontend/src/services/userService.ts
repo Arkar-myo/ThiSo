@@ -1,47 +1,8 @@
 // import axiosInstance from 'axiosInstance';
 import axiosInstance from '@/lib/axios';
+import { AuthResponse, ForgotPasswordDto, LoginDto, RegisterDto, ResetPasswordDto, User, VerifyEmailDto } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-export interface User {
-  id: string;
-  email: string;
-  username: string;
-  userType: string;
-  created: Date;
-  updatedAt: Date;
-}
-
-export interface LoginDto {
-  email: string;
-  password: string;
-}
-
-export interface RegisterDto {
-  email: string;
-  username: string;
-  password: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  user: User;
-}
-
-export interface VerifyEmailDto {
-  email: string;
-  code: string;
-}
-
-export interface ForgotPasswordDto {
-  email: string;
-  frontendBaseUri: string;
-}
-
-export interface ResetPasswordDto {
-  token: string;
-  newPassword: string;
-}
 
 // export enum ReportReason {
 //   COPYRIGHT_VIOLATION = 'COPYRIGHT_VIOLATION',

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, Heart, MessageCircle, MoreVertical, Edit2, Trash2, Flag, Bookmark } from 'lucide-react';
+import { Eye, Heart, MoreVertical, Edit2, Trash2, Flag, Bookmark } from 'lucide-react';
 import { Button } from './ui/button';
 import {
     DropdownMenu,
@@ -36,25 +36,8 @@ import {
 import { Textarea } from "./ui/textarea";
 import { toastFunc } from '@/hooks/use-toast';
 import { toast } from 'sonner';
-import { ReportReason, reportSong, Song } from '@/services/songService';
-import { User } from '@/services/userService';
-
-interface SongActionsProps {
-    songData: Song;
-    onLike: () => void;
-    isLiked: boolean;
-    onEdit?: () => void;
-    onDelete?: () => void;
-    canManage?: boolean;
-    className?: string;
-    disabled?: boolean;
-    isLoggedIn?: boolean;
-    onSave: () => void;
-    onSaveInclude?: boolean;
-    viewCountInclude?:boolean;
-    isSaved?: boolean;
-    userData?: User;
-}
+import { reportSong } from '@/services/songService';
+import { ReportReason, SongActionsProps } from '@/types';
 
 export default function SongActions({
     songData,
@@ -89,25 +72,18 @@ export default function SongActions({
 
         setIsSubmitting(true);
         try {
-            await reportSong(songData.id, {
+            if (songData) await reportSong(songData.id, {
                 reason: reportReason as ReportReason,
                 description: reportDescription,
             });
 
-            toastFunc({
-                title: "Success",
-                description: "Song has been reported successfully",
-            });
+            toast.success('Song has been reported successfully');
 
             setIsReportDialogOpen(false);
             setReportReason('');
             setReportDescription('');
         } catch (error) {
-            toastFunc({
-                title: "Error",
-                description: "Failed to report song",
-                variant: "destructive",
-            });
+            toast.error(`Failed to report song. ${error}`, );
         } finally {
             setIsSubmitting(false);
         }
@@ -142,7 +118,7 @@ export default function SongActions({
                     className="space-x-2 w-20 justify-start"
                     disabled={disabled}>
                     <Eye className="h-4 w-4" />
-                    <span>{formattedViewCount(songData.viewCount || 0)}</span>
+                    <span>{formattedViewCount(songData && songData.viewCount || 0)}</span>
                 </Button>}
                 <Button
                     variant="ghost"
@@ -154,7 +130,7 @@ export default function SongActions({
                     <Heart
                         className={`h-4 w-4 ${isLiked ? 'fill-current text-red-500' : ''}`}
                     />
-                    <span>{formattedViewCount(songData.songLikes?.length || 0)}</span>
+                    <span>{songData && (songData.songLikes?.length || 0)}</span>
                 </Button>
                 {/* <Button variant="ghost" size="sm" className="space-x-2" disabled={disabled}>
                     <MessageCircle className="h-4 w-4" />

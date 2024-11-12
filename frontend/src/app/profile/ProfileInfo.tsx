@@ -2,12 +2,13 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { User, changePassword } from "@/services/userService"
+import { changePassword } from "@/services/userService"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 // import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Loader2, Key } from "lucide-react"
 import { toast } from "sonner"
+import { User } from "@/types"
 
 export default function ProfileInfo({ user }: { user: User }) {
   const router = useRouter();

@@ -3,52 +3,9 @@
 // const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 import axiosInstance from '@/lib/axios';
+import { Artist, CreateReportDto, CreateSongDto, PaginatedResponse, ReportPaginatedResponse, ReportStatus, Song, SongReport } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-export interface Song {
-  id: string;
-  title: string;
-  singer: string;
-  writer: string;
-  body: string;
-  album: string;
-  key: string;
-  tempo: number;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  likeCount: number;
-  viewCount: number;
-  commentCount: number;
-  songLikes?: { userId: string }[];
-  savedSongs?: {
-    songId: string,
-    userId: string
-  }[];
-}
-
-export interface ThiSoProps {
-  text: string;
-  transpose: number;
-  format: string;
-}
-
-export interface CreateSongDto {
-  title: string;
-  singer: string;
-  writer: string;
-  album: string;
-  key: string;
-  tempo: number | null;
-  body: string;
-}
-
-export interface SongStats {
-  viewCount: number;
-  likeCount: number;
-  commentCount: number;
-}
 
 export const getSongs = async (): Promise<Song[]> => {
   try {
@@ -69,16 +26,6 @@ export const getSongById = async (id: string): Promise<Song> => {
     throw new Error(`Failed to fetch song with id ${id}`);
   }
 };
-
-export interface PaginatedResponse {
-  songs: Song[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalSongs: number;
-    hasMore: boolean;
-  };
-}
 
 export const searchSongs = async (query: string, page: number = 1): Promise<PaginatedResponse> => {
   const response = await fetch(`${API_URL}/songs/search?q=${encodeURIComponent(query)}&page=${page}`);
@@ -109,7 +56,7 @@ export const getFeaturedSongs = async (): Promise<Song[]> => {
   }
 };
 
-export const deleteSong = async (id: string): Promise<void> => {
+export const deleteSong = async (id: string | undefined): Promise<void> => {
   try {
     await axiosInstance.delete(`${API_URL}/songs/${id}`);
   } catch (error) {
@@ -127,16 +74,6 @@ export const updateSong = async (id: string, songData: CreateSongDto): Promise<S
     throw new Error('Failed to update song');
   }
 };
-
-// export const getSongStats = async (id: string): Promise<SongStats> => {
-//   try {
-//     const response = await axiosInstance.get<SongStats>(`${API_URL}/songs/${id}/stats`);
-//     return response.data;
-//   } catch (error) {
-//     console.error('Error fetching song stats:', error);
-//     throw new Error('Failed to fetch song stats');
-//   }
-// };
 
 export const toggleLikeSong = async (id: string, isLiked: boolean): Promise<any> => {
   try {
@@ -183,13 +120,7 @@ export const getMostLikedSongs = async (): Promise<Song[]> => {
   }
 };
 
-export interface Artist {
-  id: string;
-  name: string;
-  songCount: number;
-  likeCount: number;
-  songs: Song[];
-}
+
 
 export const getFeaturedArtists = async (): Promise<Artist[]> => {
   try {
@@ -201,56 +132,9 @@ export const getFeaturedArtists = async (): Promise<Artist[]> => {
   }
 };
 
-export enum ReportStatus {
-  PENDING = 'PENDING',
-  REVIEWED = 'REVIEWED',
-  RESOLVED = 'RESOLVED',
-  REJECTED = 'REJECTED'
-}
-
-export enum ReportReason {
-  COPYRIGHT_VIOLATION = 'COPYRIGHT_VIOLATION',
-  INAPPROPRIATE_CONTENT = 'INAPPROPRIATE_CONTENT',
-  SPAM = 'SPAM',
-  INCORRECT_INFORMATION = 'INCORRECT_INFORMATION',
-  OTHER = 'OTHER'
-}
 
 
-export interface SongReport {
-  id: string;
-  songId: string;
-  userId: string;
-  reason: ReportReason;
-  description?: string;
-  status: ReportStatus;
-  created: Date;
-  user?: {
-    username: string;
-  };
-  song?: {
-    title: string;
-    singer: string;
-  };
-}
-
-export interface ReportPaginatedResponse {
-  reports: SongReport[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalReports: number;
-    hasMore: boolean;
-  };
-}
-
-
-export interface CreateReportDto {
-  reason: ReportReason;
-  description?: string;
-}
-
-export const reportSong = async (songId: string, reportData: CreateReportDto): Promise<void> => {
+export const reportSong = async (songId: string | undefined, reportData: CreateReportDto): Promise<void> => {
   try {
     await axiosInstance.post(`${API_URL}/songs/${songId}/report`, reportData);
   } catch (error: any) {
@@ -293,7 +177,7 @@ export const deleteReport = async (reportId: string): Promise<void> => {
   }
 };
 
-export const saveSong = async (songId: string): Promise<any> => {
+export const saveSong = async (songId: string | undefined): Promise<any> => {
   try {
     const response = await axiosInstance.post(`${API_URL}/saved-songs`, { songId });
     return response.data;
@@ -303,7 +187,7 @@ export const saveSong = async (songId: string): Promise<any> => {
   }
 };
 
-export const unsaveSong = async (songId: string): Promise<any> => {
+export const unsaveSong = async (songId: string | undefined): Promise<any> => {
   try {
     const response = await axiosInstance.delete(`${API_URL}/saved-songs/${songId}`);
     return response.data;

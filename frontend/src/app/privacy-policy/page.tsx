@@ -3,18 +3,19 @@
 import React from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { translations } from '@/utils/translations'
+import termsOfPolicy from '@/data/privacy-policy.json'
 
 const PrivacyPolicy: React.FC = () => {
   const { language } = useLanguage()
   const t = translations[language]
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 max-w-4xl py-16 pt-20">
       <h1 className="text-4xl font-bold mb-8 text-center">
         {t.privacyPolicy ?? 'Privacy Policy'}
       </h1>
       <div className="space-y-8">
-        {t.privacyPolicySections.map((section, index) => (
+        {termsOfPolicy.sections.map((section, index) => (
           <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-200">{section.title}</h2>
             <p className="text-gray-600 dark:text-gray-300">{section.content}</p>

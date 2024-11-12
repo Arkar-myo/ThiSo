@@ -1,9 +1,10 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
-import { toggleLikeSong, deleteSong, saveSong, unsaveSong, Song } from '@/services/songService';
+import { toggleLikeSong, deleteSong, saveSong, unsaveSong } from '@/services/songService';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Song } from '@/types';
 
 export const useSongActions = () => {
     const { user } = useAuth();
@@ -78,7 +79,7 @@ export const useSongActions = () => {
         }
     };
 
-    const handleDelete = async (songId: string) => {
+    const handleDelete = async (songId: string | undefined) => {
         if (!user) {
             toast.error('Please login to delete songs');
             return;
@@ -94,18 +95,18 @@ export const useSongActions = () => {
         }
     };
 
-    const handleEdit = (songId: string) => {
+    const handleEdit = (songId: string | undefined) => {
         router.push(`/chordpro-editor?songId=${songId}`);
     };
 
     const checkIsLiked = (song: Song) => {
-        return song?.songLikes?.length ? song.songLikes?.some((like) => like.userId === user?.id) : false;
+        return song?.songLikes?.length ? song.songLikes?.some((like: any) => like.userId === user?.id) : false;
     }
 
     const checkIsSaved = (song: Song) => {
         return (
             song?.savedSongs?.length ?
-            song.savedSongs?.some(save => save.userId === user?.id) 
+            song.savedSongs?.some((save: any) => save.userId === user?.id) 
             : false
         );
     }

@@ -9,11 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import { ChevronDown } from 'lucide-react';
 import { useSongActions } from '@/hooks/useSongActions';
-
-interface SearchResultsProps {
-  query: string;
-  onClearSearch: () => void;
-}
+import { SearchResultsProps } from '@/types';
 
 export default function SearchResults({ query, onClearSearch }: SearchResultsProps) {
   const {

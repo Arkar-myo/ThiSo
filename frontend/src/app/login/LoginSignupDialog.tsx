@@ -16,10 +16,7 @@ import { login, register } from '@/services/userService'
 import { useRouter } from 'next/navigation'
 import EmailVerificationDialog from '../../components/EmailVerificationDialog'
 import ForgotPasswordDialog from '../../components/ForgotPasswordDialog'
-
-interface LoginSignupDialogProps {
-  className?: string;
-}
+import { LoginSignupDialogProps } from '@/types'
 
 const LoginSignupDialog: React.FC<LoginSignupDialogProps> = ({ className }) => {
   const [isOpen, setIsOpen] = useState(false)

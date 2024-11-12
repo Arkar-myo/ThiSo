@@ -7,12 +7,7 @@ import { getSongById } from '@/services/songService';
 import { notFound } from 'next/navigation';
 import RenderedSong from './RenderedSong';
 import ControlBar from './ControlBar';
-
-interface PageProps {
-  params: Promise<{
-    id: string;
-  }>;
-}
+import { PageProps } from '@/types';
 
 // Create a QueryClient instance outside of the component to avoid recreating it on every render
 const queryClient = new QueryClient();
@@ -24,7 +19,7 @@ function SongContent({ id }: { id: string }) {
   const [isScrolling, setIsScrolling] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState(0.5); // Default speed is 0.5x
   const scrollIntervalRef = useRef<NodeJS.Timeout>();
-  const [delayAmount, setDelayAmount] = useState(70);
+  const [delayAmount, setDelayAmount] = useState(110);
 
 
   const { data: song, isLoading, error } = useQuery({
@@ -89,7 +84,7 @@ function SongContent({ id }: { id: string }) {
       const newSpeed = Math.min(Math.round((prev + 0.1) * 10) / 10, 1.5);
       return newSpeed;
     });
-    setDelayAmount(delayAmount - 10);
+    setDelayAmount(delayAmount - 20);
   };
 
   const handleSpeedDecrease = () => {
@@ -98,7 +93,7 @@ function SongContent({ id }: { id: string }) {
       const newSpeed = Math.max(Math.round((prev - 0.1) * 10) / 10, 0.1);
       return newSpeed;
     });
-    setDelayAmount(delayAmount + 10);
+    setDelayAmount(delayAmount + 20);
   };
 
   useEffect(() => {

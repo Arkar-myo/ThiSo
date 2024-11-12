@@ -4,17 +4,17 @@ import { Textarea } from "@/components/ui/textarea"
 import { useLanguage } from '@/contexts/LanguageContext'
 import { translations } from '@/utils/translations'
 import { Eye, Download, Upload } from 'lucide-react'
-// import { renderThiSo, handleDownload, handleSave } from '@/app/chordpro-editor/chordServices'
 import { renderThiSo, handleDownload, handleSave } from './ChordServices'
-import { Song } from '@/services/songService'
 import { useAuth } from '@/contexts/AuthContext'
+import { toast } from 'sonner'
+import { Song } from '@/types'
 
 const ChordProEditor: React.FC<{ initialData: Song | null }> = ({ initialData }) => {
   const { language } = useLanguage()
   const { user } = useAuth()
   const t = translations[language]
-  const [chordProInput, setChordProInput] = useState<string>(initialData?.body || '')
-  const [songMetadata, setSongMetadata] = useState({
+  const [chordProInput, setChordProInput] = useState<string | undefined>(initialData?.body || '')
+  const [songMetadata, setSongMetadata] = useState<any>({
     title: initialData?.title || '',
     singer: initialData?.singer || '',
     songwriter: initialData?.writer || '',
@@ -24,6 +24,7 @@ const ChordProEditor: React.FC<{ initialData: Song | null }> = ({ initialData })
   })
   const [isRenderError, setIsRenderError] = useState(false)
   const previewRef = useRef<HTMLDivElement>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [previewContent, setPreviewContent] = useState<{
     renderedLines: React.ReactNode,
@@ -70,14 +71,21 @@ const ChordProEditor: React.FC<{ initialData: Song | null }> = ({ initialData })
     })
   }
 
-  const onSave = () => {
-    const userId = user?.id
-    const songDataWithUserId = {
-      ...songMetadata,
-      userId: userId
+  const onSave = async () => {
+    try{
+      setIsSubmitting(true);
+      const userId = user?.id
+      const songDataWithUserId = {
+        ...songMetadata,
+        userId: userId
+      }
+  
+      await handleSave(songDataWithUserId, chordProInput, initialData?.id);
+      setIsSubmitting(false);
+    } catch (e) {
+      toast.error(`${e}. Try again.`)
+      setIsSubmitting(false);
     }
-
-    handleSave(songDataWithUserId, chordProInput, initialData?.id)
   }
 
   return (
@@ -140,13 +148,32 @@ const ChordProEditor: React.FC<{ initialData: Song | null }> = ({ initialData })
                 <Download className="h-4 w-4 mr-2" />
                 Download
               </Button> */}
-              <Button onClick={onSave}
+              <Button
+                onClick={onSave}
+                className="flex-grow sm:flex-grow-0"
+                disabled={isRenderError || !chordProInput || isSubmitting}
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center justify-center gap-2 w-full">
+                    <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                    <span className="truncate">
+                      uploading...
+                    </span>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload
+                  </>
+                )}
+              </Button>
+              {/* <Button onClick={onSave}
                 className="flex-grow sm:flex-grow-0"
                 disabled={isRenderError || !chordProInput}
               >
                 <Upload className="h-4 w-4 mr-2" />
                 Upload
-              </Button>
+              </Button> */}
             </div>
             <Textarea
               value={chordProInput}

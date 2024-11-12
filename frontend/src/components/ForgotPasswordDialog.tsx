@@ -10,11 +10,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { requestPasswordReset } from '@/services/userService'
-
-interface ForgotPasswordDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { ForgotPasswordDialogProps } from '@/types'
 
 const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
   isOpen,

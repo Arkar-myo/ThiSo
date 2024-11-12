@@ -1,15 +1,12 @@
 'use client';
 
 import React from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getPopularSongs, toggleLikeSong, deleteSong, Song } from '@/services/songService';
+import { useQuery } from '@tanstack/react-query';
+import { getPopularSongs } from '@/services/songService';
 import SongCard from '@/components/SongCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import { toast } from 'sonner';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import 'swiper/css';

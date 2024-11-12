@@ -2,14 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-
-interface SearchBarProps {
-  onSearch: (query: string) => void;
-  className?: string;
-  initialQuery?: string;
-  searchQuery?: string;
-  setSearchQuery?: React.Dispatch<React.SetStateAction<string>>;
-}
+import { SearchBarProps } from '@/types';
 
 export default function SearchBar({ 
   onSearch, 

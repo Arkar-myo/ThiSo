@@ -5,6 +5,7 @@ import { GState } from 'jspdf'
 import { postSong, updateSong } from '../../services/songService'
 import ChordSheetJS from "chordsheetjs"
 import { Chord } from 'chordsheetjs';
+import { CreateSongDto, Song } from '@/types'
 
 export const handleUpload = (
   e: React.ChangeEvent<HTMLInputElement>,
@@ -280,21 +281,20 @@ export const handleDownload = async (element: HTMLElement, title: string) => {
   pdf.save(`${title || 'song'}.pdf`)
 }
 
-export const handleSave = async (metadata: any, chordProInput: string, songId?: string) => {
+export const handleSave = async (metadata: any, chordProInput: string | undefined, songId?: string) => {
   try {
-    // const { user } = useAuth()
-    const songData = {
+    const songData : CreateSongDto = {
       title: metadata.title,
       singer: metadata.singer,
       writer: metadata.songwriter,
       album: metadata.album,
       key: metadata.key,
-      tempo: metadata.bpm ? parseInt(metadata.bpm) : null,
+      tempo: metadata.bpm ? parseInt(metadata.bpm) : undefined,
       body: chordProInput,
       userId: metadata.userId
     };
 
-    if (songId) {
+    if (songId && songData) {
       await updateSong(songId, songData);
     } else {
       await postSong(songData);

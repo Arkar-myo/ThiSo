@@ -1,42 +1,27 @@
 import { renderThiSo } from '@/app/chordpro-editor/ChordServices';
 import React, { useState, useEffect, useMemo } from 'react';
-import type { Song } from '@/services/songService';
+// import type { Song } from '@/services/songService';
 import SongActions from '@/components/SongActions';
 // import { toast } from 'sonner';
 import { useSongActions } from '@/hooks/useSongActions';
-
-interface RenderedSongProps {
-  songData: Song;
-  stats?: {
-    viewCount: number;
-    likeCount: number;
-    commentCount: number;
-  };
-  onLike?: () => void;
-  isLiked?: boolean;
-  onEdit?: () => void;
-  onDelete?: () => void;
-  canManage?: boolean;
-  transposeNumber: number;
-  fontSizeNumber: number;
-}
+import { RenderedSongProps } from '@/types';
 
 const RenderedSong: React.FC<RenderedSongProps> = ({
   songData,
   transposeNumber,
   fontSizeNumber,
 }) => {
-  const { 
-    handleDelete, 
-    handleEdit, 
-    handleOptimisticLike, 
-    handleSaveToggle, 
+  const {
+    handleDelete,
+    handleEdit,
+    handleOptimisticLike,
+    handleSaveToggle,
     checkIsLiked,
     checkIsSaved,
     user } = useSongActions();
   // const queryClient = useQueryClient();
 
-  
+
   // Add state for tracking likes locally
   const [localSongData, setLocalSongData] = useState(songData);
 
@@ -117,20 +102,20 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
   // };
 
   // Update local state when songData prop changes
-  
+
   // const handleSongLike = async () => {
   //   if (!user) {
   //     toast.error('Please login to like songs');
   //     return;
   //   }
-  
+
   //   try {
   //     const isLiked = localSongData.songLikes?.some(like => like.userId === user?.id) || false;
   //     const updatedSongData = await toggleLikeSong(localSongData.id, isLiked);
-  
+
   //     // Update local state immediately for UI response
   //     setLocalSongData(updatedSongData);
-  
+
   //     toast.success(isLiked ? 'Song unliked' : 'Song liked');
   //   } catch (error) {
   //     // Revert local state on error
@@ -138,24 +123,24 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
   //     toast.error('Failed to update like');
   //   }
   // };
-  
+
   // // Custom save/unsave handler for RenderedSong
   // const handleSaveToggle1 = async () => {
   //   if (!user) {
   //     toast.error('Please login to save songs');
   //     return;
   //   }
-  
+
   //   try {
   //     const isSaved = checkIsSaved(localSongData);
   //     const updatedSongData = isSaved
   //       ? await unsaveSong(localSongData.id)
   //       : await saveSong(localSongData.id);
   //     console.log(updatedSongData)
-  
+
   //     // Update local state immediately for UI response
   //     setLocalSongData(updatedSongData);
-  
+
   //     toast.success(isSaved ? 'Song unsaved successfully' : 'Song saved successfully');
   //   } catch (error) {
   //     // Revert local state on error
@@ -182,23 +167,23 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
                   <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold break-words">
-                    {songData.title}
+                    {songData && songData.title}
                   </h1>
                   <div className="space-y-0.5">
-                    <p className="text-sm text-muted-foreground">by {songData.singer}</p>
-                    <p className="text-sm text-muted-foreground">Viewed: {songData.viewCount}</p>
+                    <p className="text-sm text-muted-foreground">by {songData && songData.singer}</p>
+                    <p className="text-sm text-muted-foreground">Viewed: {songData && songData.viewCount}</p>
                     <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                      <span>Key: {songData.key || "-"}</span>
+                      <span>Key: {songData && songData.key || "-"}</span>
                       <span>•</span>
-                      <span>Tempo: {songData.tempo || "-"}</span>
+                      <span>Tempo: {songData && songData.tempo || "-"}</span>
                     </div>
                   </div>
                 </div>
 
-                <SongActions
+                {localSongData && user && <SongActions
                   songData={localSongData}
                   onLike={() => handleOptimisticLike(localSongData, 'song')}
-                  onSave={()=> handleSaveToggle(localSongData, 'song')}
+                  onSave={() => handleSaveToggle(localSongData, 'song')}
                   isLiked={checkIsLiked(localSongData) || false}
                   isSaved={checkIsSaved(localSongData)}
                   onEdit={() => handleEdit(localSongData.id)}
@@ -208,13 +193,13 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
                   onSaveInclude={true}
                   userData={user || undefined}
                   viewCountInclude={false}
-                />
+                />}
               </div>
             </div>
 
             {/* Song Content */}
             <div className="p-4 sm:p-6">
-              {useMemo(() => {
+              {songData && useMemo(() => {
                 const { renderedLines } = renderThiSo({
                   text: songData.body,
                   transpose: transposeNumber,

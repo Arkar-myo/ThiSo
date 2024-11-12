@@ -44,7 +44,7 @@ export default function AboutPage() {
                         />
                         <FeatureCard
                             icon={<Zap className="h-10 w-10 text-primary" />}
-                            title='feature 3'
+                            title='Expend Quickly'
                             description={t.aboutParagraph3}
                         />
                     </div>

@@ -3,19 +3,12 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronUp, ChevronDown, Loader2 } from "lucide-react"
-import { Song } from "@/services/songService"
+// import { Song } from "@/services/songService"
 import { useSongActions } from "@/hooks/useSongActions"
 import SongActions from "@/components/SongActions"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
-interface SongListProps {
-  title: string
-  songs?: Song[]
-  isLoading: boolean
-  error: unknown
-  queryKey: string
-}
+import { SongListProps } from "@/types"
 
 export default function Component({ title, songs, isLoading, error, queryKey }: SongListProps) {
   const [isNavigating, setIsNavigating] = useState(false)
@@ -33,7 +26,7 @@ export default function Component({ title, songs, isLoading, error, queryKey }: 
 
   const toggleShowAll = () => setShowAll((prev) => !prev)
 
-  const handleClick = async (songId: string) => {
+  const handleClick = async (songId: string | undefined) => {
     setIsNavigating(true);
     router.push(`/songs/${songId}`);
   }
@@ -42,7 +35,7 @@ export default function Component({ title, songs, isLoading, error, queryKey }: 
     <Card className="mb-8 overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between bg-muted/50 py-4">
         <CardTitle className="text-2xl font-bold">{title}</CardTitle>
-        <Button variant="ghost" size="sm" onClick={toggleShowAll} className="text-muted-foreground hover:text-foreground">
+        {songs && songs?.length > 3 && <Button variant="ghost" size="sm" onClick={toggleShowAll} className="text-muted-foreground hover:text-foreground">
           {showAll ? (
             <>
               Show Less <ChevronUp className="ml-1 h-4 w-4" />
@@ -52,7 +45,7 @@ export default function Component({ title, songs, isLoading, error, queryKey }: 
               Show All <ChevronDown className="ml-1 h-4 w-4" />
             </>
           )}
-        </Button>
+        </Button>}
       </CardHeader>
       <CardContent className="p-0">
         {isLoading ? (

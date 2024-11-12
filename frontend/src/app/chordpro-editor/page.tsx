@@ -7,14 +7,15 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { translations } from '@/utils/translations';
 import ChordProEditor from '@/app/chordpro-editor/ChordProEditor';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { getSongById, Song } from '@/services/songService';
+import { getSongById } from '@/services/songService';
 import { useAuth } from '@/contexts/AuthContext';
+import { Song } from '@/types';
 
 function ChordProEditorContent() {
   const { language } = useLanguage();
   const { user } = useAuth();
   const searchParams = useSearchParams();
-  const [initialSongData, setInitialSongData] = useState<Song | null>(null);
+  const [initialSongData, setInitialSongData] = useState<any>(null);
   const t = translations[language];
 
   useEffect(() => {

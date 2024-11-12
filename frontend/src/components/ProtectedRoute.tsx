@@ -1,12 +1,9 @@
 'use client'
 
 import { useAuth } from '@/contexts/AuthContext'
+import { ProtectedRouteProps } from '@/types'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
-
-interface ProtectedRouteProps {
-  children: React.ReactNode
-}
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, isLoading } = useAuth()

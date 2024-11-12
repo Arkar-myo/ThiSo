@@ -2,26 +2,12 @@
 
 import React, { useState } from 'react';
 import { Bookmark, Heart, Loader2, MoreHorizontal } from 'lucide-react';
-import { Song } from '@/services/songService';
+// import { Song } from '@/services/songService';
 import { Button } from './ui/button';
 
 import SongActions from './SongActions';
 import { useRouter } from 'next/navigation';
-import { User } from '@/services/userService';
-
-interface SongCardProps {
-  song: Song;
-  // stats: SongStats;
-  onLike: () => void;
-  isLiked: boolean;
-  onEdit?: () => void;
-  onDelete?: () => void;
-  canManage?: boolean;
-  isLoggedIn?: boolean;
-  onSave: () => void;
-  isSaved?: boolean;
-  userData?: User;
-}
+import { SongCardProps } from '@/types';
 
 export default function SongCard({
   song,
@@ -87,11 +73,11 @@ export default function SongCard({
           userData={userData}
         />
       </div>
-      {isNavigating && (
+      {/* {isNavigating && (
         <div className="fixed inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-50 overflow-hidden">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
-      )}
+      )} */}
     </div>
   );
 

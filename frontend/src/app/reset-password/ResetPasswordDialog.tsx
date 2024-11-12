@@ -11,12 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { resetPassword } from '@/services/userService'
 import { useRouter } from 'next/navigation'
-
-interface ResetPasswordDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  token: string;
-}
+import { ResetPasswordDialogProps } from '@/types'
 
 const ResetPasswordDialog: React.FC<ResetPasswordDialogProps> = ({
   isOpen,

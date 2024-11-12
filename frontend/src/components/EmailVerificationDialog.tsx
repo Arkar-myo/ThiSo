@@ -11,12 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { verifyEmail } from '@/services/userService'
 import { useRouter } from 'next/navigation'
-
-interface EmailVerificationDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  email: string;
-}
+import { EmailVerificationDialogProps } from '@/types'
 
 const EmailVerificationDialog: React.FC<EmailVerificationDialogProps> = ({
   isOpen,
