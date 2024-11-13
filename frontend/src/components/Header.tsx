@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { MusicIcon, Menu, User as UserIcon, LogOut, Home, Music2, Info, Mail, Edit3 } from 'lucide-react'
+import { MusicIcon, Menu, User as UserIcon, LogOut, Home, Music2, Info, Mail, Edit3, Bell } from 'lucide-react'
 import LanguageToggle from './LanguageToggle'
 import LoginSignupDialog from '../app/login/LoginSignupDialog'
 import { Button } from './ui/button'
@@ -24,6 +24,8 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useQuery } from '@tanstack/react-query';
+import { getNotis } from '@/services/songService';
 
 const Header: React.FC = () => {
     const [isScrolled, setIsScrolled] = useState<boolean>(false)
@@ -31,6 +33,12 @@ const Header: React.FC = () => {
     const { user, setUser } = useAuth()
     const router = useRouter()
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["notis", user],
+        queryFn: getNotis,
+        enabled: !!user, // Only run query if user is authenticated
+    })
 
     useEffect(() => {
         const handleScroll = () => {
@@ -87,13 +95,24 @@ const Header: React.FC = () => {
         </DropdownMenu>
     )
 
+    useEffect(() => {
+        notiCount()
+    }, [notiCount()])
+
+    function notiCount() {
+        if (!user) return 0;
+        if (isLoading || error) return 0;
+        if (data) return data.filter((noti: any) => !noti.read).length;
+        return 0;
+    }
+
     const NavItems: React.FC = () => (
         <TooltipProvider delayDuration={0}>
             <div className="flex items-center gap-6">
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Link 
-                            className="text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors" 
+                        <Link
+                            className="text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
                             href="/"
                         >
                             <Home className="h-5 w-5" />
@@ -106,8 +125,8 @@ const Header: React.FC = () => {
 
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Link 
-                            className="text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors" 
+                        <Link
+                            className="text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
                             href="/song-list"
                         >
                             <Music2 className="h-5 w-5" />
@@ -120,8 +139,8 @@ const Header: React.FC = () => {
 
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Link 
-                            className="text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors" 
+                        <Link
+                            className="text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
                             href="/about"
                         >
                             <Info className="h-5 w-5" />
@@ -134,8 +153,8 @@ const Header: React.FC = () => {
 
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Link 
-                            className="text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors" 
+                        <Link
+                            className="text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
                             href="/contact"
                         >
                             <Mail className="h-5 w-5" />
@@ -148,8 +167,8 @@ const Header: React.FC = () => {
 
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <Link 
-                            className="text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors" 
+                        <Link
+                            className="text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
                             href="/chordpro-editor"
                         >
                             <Edit3 className="h-5 w-5" />
@@ -157,6 +176,27 @@ const Header: React.FC = () => {
                     </TooltipTrigger>
                     <TooltipContent>
                         <p>{t('chordproEditor')}</p>
+                    </TooltipContent>
+                </Tooltip>
+
+                {/* Notification Icon with Badge */}
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        {/* <div className="relative"> */}
+                        <Link
+                            className="relative text-sm font-medium hover:bg-accent hover:text-accent-foreground p-2 rounded-md transition-colors"
+                            href="/notifications"
+                        >
+                            <Bell className="h-5 w-5" />
+                            {/* Badge for notification count */}
+                            {notiCount()> 0 && <span className="absolute top-0 right-5 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                                {notiCount()}
+                            </span>}
+                        </Link>
+                        {/* </div> */}
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>{t('notifications')}</p>
                     </TooltipContent>
                 </Tooltip>
             </div>
@@ -176,45 +216,58 @@ const Header: React.FC = () => {
                     {/* <LanguageToggle /> */}
                     {user ? <UserMenu /> : <LoginSignupDialog />}
                 </nav>
-                <div className="flex lg:hidden items-center gap-2">
+                <div className="relative flex lg:hidden items-center gap-2">
                     {/* <LanguageToggle /> */}
                     {user ? (
-                        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="icon">
-                                    <Menu className="h-[1.2rem] w-[1.2rem]" />
-                                    <span className="sr-only">Toggle menu</span>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-[200px]">
-                                <DropdownMenuItem asChild>
-                                    <Link href="/">{t('home')}</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/song-list">{t('songs')}</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/about">{t('about')}</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/contact">{t('contact')}</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem asChild>
-                                    <Link href="/chordpro-editor">{t('chordproEditor')}</Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem asChild>
-                                    <Link href="/profile" className="flex items-center gap-2">
-                                        <UserIcon className="h-4 w-4" />
-                                        Profile
-                                    </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-red-600">
-                                    <LogOut className="h-4 w-4" />
-                                    Logout
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div>
+                            {notiCount() > 0 && <span className="absolute top-0 right-8 ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                                {notiCount()}
+                            </span>}
+                            <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="icon">
+                                        <Menu className="h-[1.2rem] w-[1.2rem]" />
+                                        <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-[200px]">
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/">{t('home')}</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/song-list">{t('songs')}</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/about">{t('about')}</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/contact">{t('contact')}</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/chordpro-editor">{t('chordproEditor')}</Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/notifications" className="flex items-center gap-2">
+                                            <p>{t('notifications')}</p>
+                                            {notiCount() > 0 && <span className="ml-auto inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                                                {notiCount()}
+                                            </span>}
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/profile" className="flex items-center gap-2">
+                                            <UserIcon className="h-4 w-4" />
+                                            Profile
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-red-600">
+                                        <LogOut className="h-4 w-4" />
+                                        Logout
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     ) : (
                         <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                             <DropdownMenuTrigger asChild>
@@ -240,7 +293,7 @@ const Header: React.FC = () => {
                                     <Link href="/chordpro-editor">{t('chordproEditor')}</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                     className="p-0 focus:bg-transparent"
                                     onSelect={(e) => {
                                         e.preventDefault();

@@ -39,6 +39,7 @@ model User {
   reports              SongReport[]
   savedSongs           SavedSong[]
   userType             String? // New field for user type (e.g., 'admin' or 'user')
+  Notis                 Noti[]
 }
 
 model Song {
@@ -58,6 +59,7 @@ model Song {
   updatedAt  DateTime     @updatedAt
   reports    SongReport[]
   savedSongs SavedSong[]
+  Notis       Noti[]
 }
 
 model SongLike {
@@ -88,5 +90,17 @@ model SavedSong {
   userId  String   @db.ObjectId
   song    Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
   songId  String   @db.ObjectId
+  created DateTime @default(now())
+}
+
+model Noti {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  type    String
+  content String
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  song    Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  songId  String   @db.ObjectId
+  read    Boolean  @default(false)
   created DateTime @default(now())
 }

@@ -28,7 +28,7 @@ export default function ProfileInfo({ user }: { user: User }) {
 
   return (
     <Card className="mb-8 overflow-hidden">
-      <CardHeader className="bg-muted/50 pb-4">
+      <CardHeader className="bg-primary text-primary-foreground  pb-4">
         <CardTitle className="text-2xl font-bold">Account Information</CardTitle>
       </CardHeader>
       <CardContent className="pt-6">

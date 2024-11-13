@@ -601,7 +601,6 @@ router.get("/change-password", auth, async (req, res) => {
         const user = res.locals.user;
         const resetToken = generateResetToken();
         const resetExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-        console.log('check toke--> ', resetToken)
         await prisma.user.update({
             where: { id: user.id },
             data: {

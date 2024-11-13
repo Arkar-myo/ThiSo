@@ -36,9 +36,6 @@ app.use(express.urlencoded({ extended: true }));
 const { wsRouter } = require("./routers/ws");
 app.use("/", wsRouter);
 
-// const { contentRouter } = require("./routers/content");
-// app.use("/content", contentRouter);
-
 const { songRouter } = require("./routers/song");
 app.use("/", songRouter);
 

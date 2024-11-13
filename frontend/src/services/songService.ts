@@ -226,3 +226,23 @@ export const getLikedSongs = async (): Promise<Song[]> => {
     throw new Error('Failed to fetch liked songs');
   }
 }
+
+export const getNotis = async (): Promise<any> => {
+  try {
+    const response = await axiosInstance.get<any>(`${API_URL}/notis`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching notis:', error);
+    throw new Error('Failed to fetch notis');
+  }
+}
+
+export const putAllNotisRead = async (): Promise<any> => {
+  try {
+    const response = await axiosInstance.put<any>(`${API_URL}/notis/read`);
+    return response.data;
+  } catch (error) {
+    console.error('Error update notis:', error);
+    throw new Error('Failed to update notis');
+  }
+}

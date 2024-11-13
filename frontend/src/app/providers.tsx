@@ -4,16 +4,18 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactNode, useState } from 'react'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { LanguageProvider } from '@/contexts/LanguageContext'
+import AppSocket from '@/components/AppSocket'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
+export const queryClient = new QueryClient();
 export default function Providers({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(() => new QueryClient())
-
+  // const [queryClient] = useState(() => new QueryClient())
   return (
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <AuthProvider>
+        <AppSocket />
           <div className="flex flex-col min-h-screen">
             <Header />
             <main className="flex-grow">{children}</main>

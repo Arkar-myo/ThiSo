@@ -3,6 +3,7 @@ const router = express.Router();
 const prisma = require("../prismaClient");
 const { auth, isOwner } = require("../middlewares/auth");
 const savedSongs = require("./savedSongs");
+const { clients } = require("./ws");
 
 const PUBLIC_USER_FIELDS = {
     select: {
@@ -468,6 +469,12 @@ router.post("/like/songs/:id", auth, async (req, res) => {
                 userId: user.id,
             },
         });
+        await addNoti({
+            type: "like",
+            content: "likes your song",
+            songId: id,
+            userId: user.id,
+        });
         console.log('✅ POST /like/songs/:id - Success:', { id: like.id, songId: like.songId, userId: like.userId });
         res.json({ like });
     } catch (e) {
@@ -699,5 +706,82 @@ router.delete("/reports/:id", auth, async (req, res) => {
         res.status(500).json({ error: e.message });
     }
 });
+
+router.get("/notis", auth, async (req, res) => {
+    try {
+        const user = res.locals.user;
+        const notis = await prisma.noti.findMany({
+            include: {
+                user: PUBLIC_USER_FIELDS,
+                song: SONG_SELECT_FIELDS,
+            },
+            where: {
+                song: {
+                    userId: { equals: user.id },
+                },
+            },
+            orderBy: { id: "desc" },
+            take: 20,
+        });
+
+        console.log('✅ GET /notis - Success:');
+        res.json(notis);
+
+    } catch (e) {
+        console.error('❌ GET /notis - Error:', e.message);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.put("/notis/read", auth, async (req, res) => {
+    try {
+        const user = res.locals.user;
+        await prisma.noti.updateMany({
+            where: {
+                song: {
+                    userId: { equals: user.id },
+                },
+            },
+            // include: {
+            //     user: PUBLIC_USER_FIELDS,
+            //     song: SONG_SELECT_FIELDS.select,
+            // },
+            data: { read: true },
+            
+
+        });
+        console.log('✅ PUT /notis/read - Success:');
+        res.json({ msg: "Marked all notis read" });
+
+    } catch (e) {
+        console.error('❌ PUT /notis/read - Error:', e.message);
+        res.status(500).json({ error: e.message });
+    }
+
+});
+
+async function addNoti({ type, content, songId, userId }) {
+    const song = await prisma.song.findUnique({
+        where: {
+            id: songId,
+        },
+    });
+    if (song.userId == userId) return false;
+    clients.map(client => {
+        if (client.userId == song.userId) {
+            client.ws.send(JSON.stringify({ event: "notis" }));
+            console.log(`WS: event sent to ${client.userId}: notis`);
+        }
+    });
+    console.log('✅ addNoti - Success:')
+    return await prisma.noti.create({
+        data: {
+            type,
+            content,
+            songId: songId,
+            userId: userId,
+        },
+    });
+}
 
 module.exports = { songRouter: router };

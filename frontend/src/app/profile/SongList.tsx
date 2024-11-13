@@ -33,7 +33,7 @@ export default function Component({ title, songs, isLoading, error, queryKey }: 
 
   return (
     <Card className="mb-8 overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between bg-muted/50 py-4">
+      <CardHeader className="flex bg-primary text-primary-foreground flex-row items-center justify-between py-4">
         <CardTitle className="text-2xl font-bold">{title}</CardTitle>
         {songs && songs?.length > 3 && <Button variant="ghost" size="sm" onClick={toggleShowAll} className="text-muted-foreground hover:text-foreground">
           {showAll ? (
