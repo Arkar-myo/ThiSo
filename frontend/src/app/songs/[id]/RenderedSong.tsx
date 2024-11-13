@@ -177,6 +177,7 @@ const RenderedSong: React.FC<RenderedSongProps> = ({
                       <span>•</span>
                       <span>Tempo: {songData && songData.tempo || "-"}</span>
                     </div>
+                    <p className="text-xs text-muted-foreground">Uploaded by {songData?.user?.username}</p>
                   </div>
                 </div>
 

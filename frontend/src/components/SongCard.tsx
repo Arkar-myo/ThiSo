@@ -73,6 +73,7 @@ export default function SongCard({
           userData={userData}
         />
       </div>
+      <p className="text-xs text-muted-foreground">Uploaded by {song.user?.username}</p>
       {/* {isNavigating && (
         <div className="fixed inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-50 overflow-hidden">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />

@@ -117,6 +117,7 @@ export interface Song {
   key?: string;
   tempo?: number;
   userId?: string;
+  user?: User;
   createdAt?: Date;
   updatedAt?: Date;
   likeCount?: number;
